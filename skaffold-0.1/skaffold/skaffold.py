@@ -1,6 +1,6 @@
 import flask
 from flask import request, redirect, url_for, flash
-import flask.ext.wtf as wtf
+from flask.ext.wtf as wtf
 from sqlalchemy import Integer, String, DateTime, Text
 import sqlalchemy.orm
 import wtforms
