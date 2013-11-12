@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, request, g, session, url_for, flash
-from model import User
+from model import User, Trip, PackingList, PackListItems, Item, ActivityItem, Activity
 from flask.ext.login import LoginManager, login_required, login_user, current_user
 from flaskext.markdown import Markdown
 import config
@@ -16,6 +16,7 @@ login_manager.login_view = "login"
 
 @login_manager.user_loader
 def load_user(user_id):
+    print User.query.get(user_id)
     return User.query.get(user_id)
 
 # End login stuff
@@ -27,7 +28,9 @@ Markdown(app)
 def index():
     if session.get("id"):
         user = model.user_by_id(session["id"])
-        return redirect(url_for("profile", user_id.id))
+    # user = load_user(user_id)
+    # if user != None:
+        return redirect(url_for("profile", user_id=user.id))
     else:
         return render_template("index.html", user_id=None)
 
@@ -39,7 +42,6 @@ def authenticate():
         return render_template("index.html")
 
     username = form.username.data
-    email = form.email.data
     password = form.password.data
 
     user = User.query.filter_by(username=username).first()
@@ -58,19 +60,19 @@ def register():
 
 @app.route("/register", methods=["POST"])
 def create_user():
-    username = request.form.get("username")
     email = request.form.get("email")
+    username = request.form.get("username")
     password = request.form.get("password")
     verify_password = request.form.get("password_verify")
     
     if password != verify_password:
         flash("Passwords do not match")
         return redirect(url_for("register"))
-    if model.userExists(email):
-        flash("Account already exists for user email") 
+    if model.userExists(username, email):
+        flash("Account already exists for username and/or email") 
         return redirect(url_for("register"))
 
-    model.create_user(username, email, password)
+    model.create_user(email, username, password)
     flash("You've successfully made an account!")
     return redirect(url_for("index"))
 
@@ -79,21 +81,21 @@ def clear_session():
     session.clear()
     return redirect(url_for("index"))
 
+
 @app.route("/profile/<user_id>")
-def user_profile(user_id):
-    profile_link = my_profile_link()
-    user = model.user_by_id(user_id)
-    trips = model.get_trip_list(user_id)
+@login_required
+def profile(user_id):
+    profile_link = user_profile_link()
+    user = load_user(user_id)
+    user_trips = model.get_user_trips(user_id)
+    return render_template("user_profile.html", user_id=user_id, email = user.email, user_trips=user_trips, profile_link=profile_link)
+
+def user_profile_link():
     if session.get('id'):
-        if session['id'] == int(user_id):
-            return render_template("profile.html", user_id=user_id, email = user.email, 
-                                    movie_ratings=movie_ratings, profile_link=profile_link)
-        else:
-            return render_template("user_profile.html", user_id=user_id, email = user.email, 
-                        movie_ratings=movie_ratings, profile_link=profile_link)
+        profile_link = session['id']
     else:
-        return render_template("user_profile.html", user_id=user_id, email = user.email, 
-                        movie_ratings=movie_ratings, profile_link=profile_link)
+        profile_link = None
+    return profile_link
 
 
 

@@ -1,8 +1,10 @@
 {% extends 'master.html' %}
 {% block body %}
-<form method="post">
-    <input type="text" name="username" placeholder="Username"><br>
-    <input type="password" name="password" placeholder="Password"><br>
-    <input type="submit">
+<form class="signin" method="POST">
+    <h2 class = "signin-heading">Please Sign In</h2>
+    <input type="text" class ="form-control" placeholder="Username" name="username"><br>
+    <input type="password" class="form-control" placeholder="Password" name="password"><br>
+    <a href="/register">Register a new account</a>
+    <input type="submit" class="btn btn-lg btn-primary btn-block" value="Submit">
 </form>
 {% endblock %}
