@@ -1,14 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'master.html' %}
 {% block body %}
-{% for post in posts %}
-<div class="post">
-    <h2><a href="{{url_for("view_post", id=post.id)}}">{{post.title}}</a></h2>
-    <p>
-        {{post.body | markdown}}
-    </p>
-</div>
-{% else %}
-No posts here!
-<a href="{{url_for("new_post")}}">New post</a>
-{% endfor %}
+<form method="post">
+    <input type="text" name="username" placeholder="Username"><br>
+    <input type="password" name="password" placeholder="Password"><br>
+    <input type="submit">
+</form>
 {% endblock %}
