@@ -88,7 +88,7 @@ def profile(user_id):
     profile_link = user_profile_link()
     user = load_user(user_id)
     user_trips = model.get_user_trips(user_id)
-    return render_template("user_profile.html", user_id=user_id, email = user.email, user_trips=user_trips, profile_link=profile_link)
+    return render_template("user_profile.html", user_id=user_id, username = user.username, user_trips=user_trips, profile_link=profile_link)
 
 def user_profile_link():
     if session.get('id'):

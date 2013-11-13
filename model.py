@@ -26,10 +26,6 @@ class User(Base, UserMixin):
 	password = Column(String(64), nullable=False)
 	salt = Column(String(64), nullable=False)
 
-	trip = relationship("Trip", backref=backref("users", order_by=id))
-	packing_list = relationship("PackingList", backref=backref("users", order_by=id))
-	# posts = relationship("Post", uselist=True)
-
 	def set_password(self, password):
 		self.salt = bcrypt.gensalt()
 		password = password.encode("utf-8")
@@ -44,18 +40,11 @@ class Trip(Base):
 	__tablename__="trips"
 	id = Column(Integer, primary_key=True)
 	user_id = Column(Integer, ForeignKey('users.id'))
-	# packing_list_id = Column(Integer, ForeignKey('packing_lists.id')) #nullable=True?
 	name = Column(String(64), nullable=False)
 	destination= Column(String(100), nullable=False)
-	length_of_trip= Column(Integer, nullable=True)  # Figure out how to time units (ex. 2-3 months)
+	length_of_trip= Column(Integer, nullable=True)  # nullable=True for now. Decide a time unit (ex. 2-3 months)
 
-########## Put this here? ############
-	activities_id=Column(Integer, ForeignKey('activities.id'))  #might not have activities added
-##########
-
-	packing_list = relationship("PackingList", uselist=False, backref=backref("trips", order_by=id))
-	activity = relationship("Activity", backref=backref("trips", order_by=id))
-
+	user = relationship("User", backref=backref("trips", order_by=id))
 
 class PackingList(Base):
 	__tablename__="packing_lists"
@@ -63,7 +52,10 @@ class PackingList(Base):
 	user_id = Column(Integer, ForeignKey('users.id'))
 	trip_id = Column(Integer, ForeignKey('trips.id'))
 
-	packlist_item = relationship("PackListItems", backref=backref("packing_lists", order_by=id))
+	### Write code to auto-update user_id in Trip and PackingList so they will always be the same ####
+
+	user = relationship("User", backref=backref("packing_lists", order_by=id))
+	trip = relationship("Trip", backref=backref("packing_lists", order_by=id))
 
 
 class PackListItems(Base):
@@ -72,7 +64,7 @@ class PackListItems(Base):
 	packing_list_id=Column(Integer, ForeignKey('packing_lists.id'))
 	item_id=Column(Integer, ForeignKey('items.id'))
 
-	# packing_list = relationship("PackingList", backref=backref("packlist_items", order_by=id))
+	packing_list = relationship("PackingList", backref=backref("packlist_items", order_by=id))
 	item = relationship("Item", backref=backref("packlist_items", order_by=id))
 
 class Item(Base):
@@ -94,8 +86,34 @@ class Activity(Base):
 	id = Column(Integer, primary_key=True)
 	name = Column(String(100), nullable=False)
 
+class TripActivity(Base):
+	__tablename__="trip_activities"
+	id = Column(Integer, primary_key=True)
+	trip_id = Column(Integer, ForeignKey('trips.id'))
+	activity_id = Column(Integer, ForeignKey('activities.id'))
+
+	trip = relationship("Trip", backref=backref("trip_activities", order_by=id))
+	activity = relationship("Activity", backref=backref("trip_activities", order_by=id))
+
 
 ### End of class declarations  ###
+
+#########
+
+def connect():
+    global ENGINE
+    global Session
+
+    ENGINE = create_engine("sqlite:///packinglist.db", echo=True)
+    Session = scoped_session(sessionmaker(bind=ENGINE, autocommit=False, autoflush=False))
+    Base = declarative_base()
+    Base.query = Session.query_property()
+#    if you are remaking the dbs, uncomment the following!
+    Base.metadata.create_all(ENGINE)
+
+    return Session()
+
+#########
 
 def create_user(username, email, password):
 	new_user = User(username=username, email=email, password=password)
@@ -114,33 +132,32 @@ def get_user_trips(id):
 		user_trips[trip.user_id] = trip.trip
 	return user_trips
 
+
 def userExists(username, email):
 	user = session.query(User).filter_by(username=username, email=email).first()
 	if user == None:
 		return False
 	return True
 
-# In views.py:
-
-# def user_exists(email):
-# 	user = session.query(User).filter_by(email=email).first()
-# 	if user == None:
-# 		return False
-# 	return True
-
-# def authenticate(username, email, password):
-# 	user = session.query(User).filter_by(username=username, email=email, password=password).first()
-# 	if user == None:
-# 		return None
-# 	return user.id
+# def main():
+# 	pass
 
 
-def main():
-	pass
+# if __name__ == "__main__":
+# 	main()
 
+
+def create_tables():
+    Base.metadata.create_all(engine)
+    u = User(email="test@test.com")
+    u.set_password("unicorn")
+    session.add(u)
+    # p = Post(title="This is a test post", body="This is the body of a test post.")
+    # u.posts.append(p)
+    session.commit()
 
 if __name__ == "__main__":
-	main()
+	create_tables()
 
 
 
