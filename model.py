@@ -98,25 +98,10 @@ class TripActivity(Base):
 
 ### End of class declarations  ###
 
-#########
-
-def connect():
-    global ENGINE
-    global Session
-
-    ENGINE = create_engine("sqlite:///packinglist.db", echo=True)
-    Session = scoped_session(sessionmaker(bind=ENGINE, autocommit=False, autoflush=False))
-    Base = declarative_base()
-    Base.query = Session.query_property()
-#    if you are remaking the dbs, uncomment the following!
-    Base.metadata.create_all(ENGINE)
-
-    return Session()
-
-#########
 
 def create_user(username, email, password):
-	new_user = User(username=username, email=email, password=password)
+	new_user = User(username=username, email=email)
+	new_user.set_password(password)
 	session.add(new_user)
 	session.commit()
 
@@ -124,13 +109,15 @@ def user_by_id(id):
 	user=session.query(User).get(id).first()
 	return user
 
-def get_user_trips(id):
-	user = session.query(User).filter_by(id=id).first()
-	trips = user.trips
-	user_trips = {}
-	for trip in trips:
-		user_trips[trip.user_id] = trip.trip
-	return user_trips
+# Having problems with get_user_trips:
+
+# def get_user_trips(id):
+# 	user = session.query(User).filter_by(id=id).first()
+# 	trips = user.trips
+# 	user_trips = {}
+# 	for trip in trips:
+# 		user_trips[trip.user_id] = trip.trip
+# 	return user_trips
 
 
 def userExists(username, email):
@@ -139,13 +126,10 @@ def userExists(username, email):
 		return False
 	return True
 
-# def main():
-# 	pass
 
 
-# if __name__ == "__main__":
-# 	main()
 
+##### Database function
 
 def create_tables():
     Base.metadata.create_all(engine)
@@ -156,10 +140,22 @@ def create_tables():
     # u.posts.append(p)
     session.commit()
 
+
+
 if __name__ == "__main__":
 	create_tables()
 
 
+
+
+
+
+# def main():
+# 	pass
+
+
+# if __name__ == "__main__":
+# 	main()
 
 
 

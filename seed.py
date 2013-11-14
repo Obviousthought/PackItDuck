@@ -13,7 +13,7 @@ def load_users(session):
     model.session.add(u2)
 
 def main():
-	session = model.connect()
+	# session = model.connect()
 	model.create_tables()
 	load_users(session)
 	model.session.commit()

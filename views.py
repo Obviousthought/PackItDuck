@@ -26,11 +26,11 @@ Markdown(app)
 
 @app.route("/")
 def index():
-    if session.get("id"):
-        user = model.user_by_id(session["id"])
+    if session.get('id'):
+        user = model.user_by_id(session['id'])
     # user = load_user(user_id)
     # if user != None:
-        return redirect(url_for("profile", user_id=user.id))
+        return redirect(url_for("my_profile", user_id=user.id))
     else:
         return render_template("index.html", user_id=None)
 
@@ -51,7 +51,7 @@ def authenticate():
         return render_template("index.html")
 
     login_user(user)
-    return redirect(request.args.get("next", url_for("profile")))
+    return redirect(request.args.get("next", url_for("my_profile")))
 
 
 @app.route("/register")
@@ -59,7 +59,7 @@ def register():
     return render_template("register.html")
 
 @app.route("/register", methods=["POST"])
-def create_user():
+def make_new_user():
     email = request.form.get("email")
     username = request.form.get("username")
     password = request.form.get("password")
@@ -74,7 +74,11 @@ def create_user():
 
     model.create_user(email, username, password)
     flash("You've successfully made an account!")
-    return redirect(url_for("index"))
+    user = User.query.filter_by(username=username).first()
+
+#### Problem right here:
+    login_user(user)
+    return redirect(request.args.get("next", url_for("my_profile")))
 
 @app.route("/clear")
 def clear_session():
@@ -82,13 +86,14 @@ def clear_session():
     return redirect(url_for("index"))
 
 
+
 @app.route("/profile/<user_id>")
 @login_required
-def profile(user_id):
+def my_profile(user_id):
     profile_link = user_profile_link()
     user = load_user(user_id)
     user_trips = model.get_user_trips(user_id)
-    return render_template("user_profile.html", user_id=user_id, username = user.username, user_trips=user_trips, profile_link=profile_link)
+    return render_template("home_page.html", user_id=user_id, username = user.username, user_trips=user_trips, profile_link=profile_link)
 
 def user_profile_link():
     if session.get('id'):

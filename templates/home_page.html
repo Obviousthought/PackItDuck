@@ -1,0 +1,13 @@
+{% extends 'master.html' %}
+{% block body %}
+
+<h2>Welcome {{username}}!</h2>
+    <ul>
+        {% for message in get_flashed_messages() %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    
+    <p>Trips:</p>
+
+{% endblock %}

@@ -2,6 +2,11 @@
 {% block body %}
 <form class="signin" method="POST">
     <h2 class = "signin-heading">Please Sign In</h2>
+        <ul>
+        {% for message in get_flashed_messages() %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
     <input type="text" class ="form-control" placeholder="Username" name="username"><br>
     <input type="password" class="form-control" placeholder="Password" name="password"><br>
     <a href="/register">Register a new account</a>
