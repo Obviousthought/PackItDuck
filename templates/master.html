@@ -5,20 +5,26 @@
         <script type="text/javascript" src="/static/js/bootstrap.js"></script>
         <script type="text/javascript" src="/static/js/jquery-2.0.3.min.js"></script>
     </head>
+
     <body>
-        <div id = "sidebar">
-            <ul id = "sidebar_list">
-                {% if profile_link %}
-                <li><a href="/profile/{{profile_link}}">Home Page</a></li>
-                <li><a href="/clear">Sign Out</a></li>
-                {% else %}
-                <li><a href="/">Sign In</a></li>
-                {% endif %}
-            </ul>
-        </div>
+
         <div class="container">
+
             {% block body %}
+
             {% endblock %}
+
         </div>
+
+        <div id="footerbar">
+
+            {% if profile_link%}
+                <a href="/profile/{{profile_link}}">Home | </a>
+                <a href="/logout">Logout </a>
+            {% endif %}
+
+        </div>
+
     </body>
+
 </html>

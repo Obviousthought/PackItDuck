@@ -1,15 +1,28 @@
 {% extends 'master.html' %}
+
 {% block body %}
-<form class="signin" method="POST" action="/register">
+
+<form class="registering" method="POST" action="/register">
+
     {% for message in get_flashed_messages() %}
             <p>{{ message }}</p>
     {% endfor %}
-    <h2 class="signin-heading">Register a new account</h2>
-    <input type="text" class="form-control" placeholder="Username" name="username">
+    
+    <h2 class="registering-heading">Register a new account</h2>
+    
     <input type="text" class="form-control" placeholder="Email" name="email">
+
+    <input type="text" class="form-control" placeholder="Username" name="username">
+
     <input type="password" class="form-control" placeholder="Password" name="password">
+
     <input type="password" class="form-control" placeholder="Verify Password" name="password_verify">
 
+
     <input type="submit" class="btn btn-lg btn-primary btn-block" value="Submit">
+
+    <a href="/login">Login</a>
+
 </form>
+
 {% endblock %}

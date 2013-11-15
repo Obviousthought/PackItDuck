@@ -18,6 +18,8 @@ session = scoped_session(sessionmaker(bind=engine,
 Base = declarative_base()
 Base.query = session.query_property()
 
+### Class Declarations ####
+
 class User(Base, UserMixin):
 	__tablename__ = "users" 
 	id = Column(Integer, primary_key=True)
@@ -98,69 +100,56 @@ class TripActivity(Base):
 
 ### End of class declarations  ###
 
-
-def create_user(username, email, password):
-	new_user = User(username=username, email=email)
+# 1
+def create_user(email, username, password):
+	new_user = User(email=email, username=username)
 	new_user.set_password(password)
 	session.add(new_user)
 	session.commit()
 
-def user_by_id(id):
-	user=session.query(User).get(id).first()
+# 2
+def get_user_by_id(id):
+	user = session.query(User).get(id)
 	return user
 
-# Having problems with get_user_trips:
 
-# def get_user_trips(id):
-# 	user = session.query(User).filter_by(id=id).first()
-# 	trips = user.trips
-# 	user_trips = {}
-# 	for trip in trips:
-# 		user_trips[trip.user_id] = trip.trip
-# 	return user_trips
+# 3 Get a dictionary with list of trip names for the user:
+def get_user_trips(id):
+	user = session.query(User).filter_by(id=id).first()
+	trips = user.trips
+	user_trips = {}
+	for trip in trips:
+		user_trips.append[trips.name]
+	return user_trips
 
 
-def userExists(username, email):
-	user = session.query(User).filter_by(username=username, email=email).first()
+# 4 Check if there is a user with a certain username and password:
+def validate_user(username, password):
+	user = session.query(User).filter_by(username=username, password=password).first()
 	if user == None:
-		return False
-	return True
+		return None
+	return user.id
+
+# 5 Check if an email already exists:
+def email_exists(email):
+    user = session.query(User).filter_by(email=email).first()
+    if user == None:
+        return False
+    return True
 
 
+# 6 Check if a username is already taken:
+def username_exists(username):
+    user = session.query(User).filter_by(username=username).first()
+    if user == None:
+        return False
+    return True
 
 
-##### Database function
 
 def create_tables():
-    Base.metadata.create_all(engine)
-    u = User(email="test@test.com")
-    u.set_password("unicorn")
-    session.add(u)
-    # p = Post(title="This is a test post", body="This is the body of a test post.")
-    # u.posts.append(p)
-    session.commit()
-
+	Base.metadata.create_all(engine)
 
 
 if __name__ == "__main__":
 	create_tables()
-
-
-
-
-
-
-# def main():
-# 	pass
-
-
-# if __name__ == "__main__":
-# 	main()
-
-
-
-
-
-
-
-
