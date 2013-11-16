@@ -48,11 +48,8 @@ def login():
 
 @app.route("/login", methods=["POST"])
 def authenticate():
-    form = forms.LoginForm(request.form)
-    if not form.validate():
-        flash("Incorrect username or password") 
-        return render_template("login.html")
 
+    form = forms.LoginForm(request.form)
     username = form.username.data
     password = form.password.data
 
@@ -61,11 +58,9 @@ def authenticate():
     if not user or not user.authenticate(password):
         flash("Incorrect username or password") 
         return render_template("login.html")
-
-    login_user(user)
-    # profile_link = my_profile_link()
-    return redirect(url_for("profile", user_id=user.id)) #, profile_link=profile_link)))
-            # redirect(request.args.get("next", url_for("profile", user_id=user.id)))
+    else:
+        login_user(user)
+        return redirect(url_for("profile", user_id=user.id))
 
 @app.route("/register")
 def register():
@@ -91,20 +86,11 @@ def create_user():
     model.create_user(email, username, password)
     flash("You've successfully made an account!")
 
-
     user_id = session.get('id')
-    # user = model.get_user_by_id(user_id)
-    # profile_link = my_profile_link()
-
-    return redirect(url_for("profile", user_id=user.id)) #, profile_link=profile_link))
-
-@app.route("/profile/<user_id>")
-# @login_required
-def profile(user_id):
-    profile_link = my_profile_link()
     user = model.get_user_by_id(user_id)
-    return render_template("home_page.html", user_id=user_id, username=user.username, email=user.email, profile_link=profile_link)
+    id = session.get('id')
 
+    return redirect(url_for("profile", user_id=user.id))
 
 def my_profile_link():
     if session.get('id'):
@@ -112,6 +98,19 @@ def my_profile_link():
     else:
         profile_link = None
     return profile_link
+
+@app.route("/profile/<user_id>")
+# @login_required
+def profile(user_id):
+    profile_link = my_profile_link()
+    user = model.get_user_by_id(user_id)
+
+    packlist_id = model.get_user_packlist(user_id)
+
+    return render_template("home_page.html", user_id=user_id, username=user.username, packlist_id=packlist_id, email=user.email, profile_link=profile_link)
+
+# @app.route("/profile/<user_id>/<")
+
 
 
 @app.route("/logout")

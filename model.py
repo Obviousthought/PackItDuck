@@ -44,7 +44,7 @@ class Trip(Base):
 	user_id = Column(Integer, ForeignKey('users.id'))
 	name = Column(String(64), nullable=False)
 	destination= Column(String(100), nullable=False)
-	length_of_trip= Column(Integer, nullable=True)  # nullable=True for now. Decide a time unit (ex. 2-3 months)
+	length_of_trip= Column(Integer, nullable=True)  # nullable=True for now
 
 	user = relationship("User", backref=backref("trips", order_by=id))
 
@@ -54,10 +54,13 @@ class PackingList(Base):
 	user_id = Column(Integer, ForeignKey('users.id'))
 	trip_id = Column(Integer, ForeignKey('trips.id'))
 
-	### Write code to auto-update user_id in Trip and PackingList so they will always be the same ####
+### Write code to auto-update user_id in Trip and PackingList ####
 
 	user = relationship("User", backref=backref("packing_lists", order_by=id))
 	trip = relationship("Trip", backref=backref("packing_lists", order_by=id))
+
+# google sqlalchemy: auto-update for foreignkeys
+# figure out why db let you add packing list to a trip that didn't exist
 
 
 class PackListItems(Base):
@@ -100,28 +103,26 @@ class TripActivity(Base):
 
 ### End of class declarations  ###
 
-# 1
+# 1 adds a new user to the database
 def create_user(email, username, password):
 	new_user = User(email=email, username=username)
 	new_user.set_password(password)
 	session.add(new_user)
 	session.commit()
 
-# 2
+# 2 retrieves user attributes as a list with the user's id
 def get_user_by_id(id):
 	user = session.query(User).get(id)
 	return user
 
 
-# 3 Get a dictionary with list of trip names for the user:
-def get_user_trips(id):
-	user = session.query(User).filter_by(id=id).first()
-	trips = user.trips
-	user_trips = {}
-	for trip in trips:
-		user_trips.append[trips.name]
+# 3 Returns a list of trip_id's for the user:
+def get_user_packlist(id):
+	packlist = session.query(PackingList).filter_by(user_id=id)
+	user_trips = []
+	for p in packlist:
+		user_trips.append(p.id)
 	return user_trips
-
 
 # 4 Check if there is a user with a certain username and password:
 def validate_user(username, password):
