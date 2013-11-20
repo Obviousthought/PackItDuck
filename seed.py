@@ -1,94 +1,81 @@
 import model
-
-def load_users(session):
-    u1 = model.User(username="balloonicorn", 
-                    email="b@hackbright.com")
-
-    u1.set_password("unicorn")    
-    model.session.add(u1)
-
-    u2 = model.User(username="ducksta", email="duck@hackbright.com")
-
-    u2.set_password("duck")
-    model.session.add(u2)
-
-def main():
-	# session = model.connect()
-	model.create_tables()
-	load_users(session)
-	model.session.commit()
-
-if __name__ == "__main__":
-	# s = model.connect()
-	main()
-
-
-
-
-
-
-######### From Movie_Ratings Exercise #############
-
-
-# import model
-# import csv
+import csv
 # import datetime
 
 
-# def load_users(session):
-#     f= open('seed_data/u.user')
+def load_items(session):
+    with open("seed_data/u.items") as csvfile:
+        items = csv.reader(csvfile,delimiter="|")
+        for item in items:
+                new_item = model.Item(name=item[0])
+                session.add(new_item)
+    return session
+
+
+def load_activities(session):
+    with open("seed_data/u.activities") as csvfile:
+        activities = csv.reader(csvfile,delimiter="|")
+        for activity in activities:
+                new_activity = model.Activity(name=activity[0])
+                session.add(new_activity)
+    return session
+
+
+def load_activity_items(session):
+    with open("seed_data/u.activity_items", "rb") as csvfile:
+        activity_items = csv.reader(csvfile, delimiter=",")
+        for activity_item in activity_items:
+                new_activity_item = model.ActivityItem(item_id=activity_item[0], activity_id=activity_item[1])
+                session.add(new_activity_item)
+    return session
+
+
+def main():
+    load_items(model.session)
+    load_activities(model.session)
+    load_activity_items(model.session)
+    session.commit()
+
+
+if __name__ == "__main__":
+    model.Base.metadata.create_all(model.engine)
+    session = model.session
+    main()
+
+    # model.create_tables()
+    # session = model.session
+    # s = model.connect()
+
+    # session = model.session
+    # model.create_user()
+    # model.create_trip()
+    # model.create_packinglist()
+    # model.create_packlist_item()
+    # model.create_trip_activity()
+
+# def main():
+    # session = model.connect()
+    # model.create_tables()
+
+
+# def load_activities(session):
+#     f = open('seed_data/u.activities')
 #     lines = f.readlines()
 #     for line in lines:
-#         user = line.split("|")
-#         zipcode = user[4].strip()
-#         new_user = model.User(id = user[0], age=user[1], zipcode=zipcode)    
-#         session.add(new_user)
+#         activity = line.split()
+
+#         new_activity = model.Activity(name=activity[0])
+#         session.add(new_activity) 
 #     session.commit()
 #     f.close()
 
-# def load_movies(session):
-#     f = open('seed_data/u.item')
+# def load_activity_items(session):
+#     f = open('seed_data/u.activity_items')
 #     lines = f.readlines()
 #     for line in lines:
-#         movie = line.split("|")
-#         title = movie[1]
-#         title = title.decode("latin-1")
-#         movie_tokens = title.split()
-#         movie_title = movie_tokens[:-1]
-#         final_movie_title = " ".join(movie_title)
+#         activity_items = line.split("|")
 
-#         if movie[2] != "":
-#             release_date = datetime.datetime.strptime(movie[2], '%d-%b-%Y')
-#         else:
-#             release_date = None
-
-#         new_movie = model.Movie(id=movie[0], name = final_movie_title, release_date=release_date, imdb_url=movie[4])
-#         session.add(new_movie)
+#         new_activity_item = model.ActivityItem(item_id=activity_items[0], activity_id=activity_items[1])
+#         session.add(new_activity_item) 
 #     session.commit()
 #     f.close()
-
-# def load_ratings(session):
-#     f = open('seed_data/u.data')
-#     lines = f.readlines()
-#     for line in lines:
-#         rating = line.split()
-
-#         new_rating = model.Rating(movie_id=rating[1], user_id=rating[0], rating=rating[2].strip())
-#         session.add(new_rating)
-        
-#     session.commit()
-#     f.close()
-
-# def main(session):
-#     # You'll call each of the load_* functions with the session as an argument
-#     session = model.connect()
-#     # load_users(session)
-#     # print "loaded users"
-#     load_movies(session)
-#     print "loaded movies"
-#     load_ratings(session)
-#     print "loaded ratings"
-
-# if __name__ == "__main__":
-#     s= model.connect()
-#     main(s)

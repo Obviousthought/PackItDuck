@@ -1,10 +1,15 @@
 import config
 import bcrypt
-from datetime import datetime
+from datetime import datetime, date, timedelta
+
+# from flask import Flask, render_template, redirect, request, g, session, url_for, flash
+# from flask.ext.login import LoginManager, login_required, login_user, current_user
+# from flask.ext.admin import Admin
+# from flask.ext.admin.contrib.sqla import ModelView
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, ForeignKey
-from sqlalchemy import Column, Integer, String, DateTime, Text
+from sqlalchemy import Column, Integer, String, DateTime, Text, Index
 
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship, backref
 
@@ -44,9 +49,18 @@ class Trip(Base):
 	user_id = Column(Integer, ForeignKey('users.id'))
 	name = Column(String(64), nullable=False)
 	destination= Column(String(100), nullable=False)
-	length_of_trip= Column(Integer, nullable=True)  # nullable=True for now
+	start_date = Column(DateTime, nullable=False)
+	end_date = Column(DateTime, nullable=False)
 
 	user = relationship("User", backref=backref("trips", order_by=id))
+
+	def date_range(self):
+		length_of_trip = []
+		current = self.start_date
+		while current <= self.end_date:
+			length_of_trip.append(current)
+			current = current + timedelta(days=1)
+		return length_of_trip[0]
 
 class PackingList(Base):
 	__tablename__="packing_lists"
@@ -103,20 +117,46 @@ class TripActivity(Base):
 
 ### End of class declarations  ###
 
-# 1 adds a new user to the database
+
+#### Creating Tables in Database ####
+
 def create_user(email, username, password):
 	new_user = User(email=email, username=username)
 	new_user.set_password(password)
 	session.add(new_user)
 	session.commit()
 
-# 2 retrieves user attributes as a list with the user's id
+def create_trip(user_id, name, destination, start_date, end_date):
+    new_trip = Trip(name=name, destination=destination, start_date=start_date, end_date=end_date)
+    session.add(new_trip)
+    session.commit()
+
+def create_packinglist(user_id, trip_id):
+    new_packinglist = PackingList()
+    session.add(new_packinglist)
+    session.commit()
+
+def create_packlist_item(packing_list_id, item_id):
+    new_packlist_items = PackListItems()
+    session.add(new_packlist_items)
+    session.commit()
+
+def create_trip_activity(trip_id, activity_id):
+    new_trip_activity = TripActivity()
+    session.add(new_trip_activity)
+    session.commit()
+
+#### End Database Configuration ####
+
+#### Call Functions ####
+
+# retrieves user attributes as a list with the user's id
 def get_user_by_id(id):
 	user = session.query(User).get(id)
 	return user
 
 
-# 3 Returns a list of trip_id's for the user:
+# Returns a list of trip_id's for the user:
 def get_user_packlist(id):
 	packlist = session.query(PackingList).filter_by(user_id=id)
 	user_trips = []
@@ -124,14 +164,21 @@ def get_user_packlist(id):
 		user_trips.append(p.id)
 	return user_trips
 
-# 4 Check if there is a user with a certain username and password:
+# def get_user_trips(id):
+# 	trip = session.query(Trip)filter_by(user_id=id)
+# 	trip_list = []
+# 	for t in trip:
+# 		trip_list.append(t.name)
+# 	return trip_list
+
+# Check if there is a user with a certain username and password:
 def validate_user(username, password):
 	user = session.query(User).filter_by(username=username, password=password).first()
 	if user == None:
 		return None
 	return user.id
 
-# 5 Check if an email already exists:
+# Check if an email already exists:
 def email_exists(email):
     user = session.query(User).filter_by(email=email).first()
     if user == None:
@@ -139,18 +186,48 @@ def email_exists(email):
     return True
 
 
-# 6 Check if a username is already taken:
+# Check if a username is already taken:
 def username_exists(username):
     user = session.query(User).filter_by(username=username).first()
     if user == None:
         return False
     return True
 
-
-
 def create_tables():
 	Base.metadata.create_all(engine)
 
+def main():
+	pass
 
 if __name__ == "__main__":
-	create_tables()
+	# admin = Admin(app)
+	# admin.add_view(ModelView(User, session))
+	main()
+	# create_tables()
+
+
+
+
+
+
+
+
+
+
+# def connect():
+#     global ENGINE
+#     global Session
+
+#     # ENGINE = create_engine("sqlite:///ratings.db", echo=True)
+#     Session = scoped_session(sessionmaker(bind=ENGINE, autocommit=False, autoflush=False))
+#     Base = declarative_base()
+#     Base.query = Session.query_property()
+#     # if you are remaking the dbs, uncomment the following!
+#     # Base.metadata.create_all(ENGINE)
+
+#     return Session()
+
+
+
+
+

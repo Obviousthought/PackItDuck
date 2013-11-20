@@ -1,0 +1,32 @@
+{% extends "master.html" %}
+
+{% block body %}
+<div class="calendar">
+<form method="post" class="form-horizontal" role="form">
+    <div class="form-group">
+        <label for="name" class="col-sm-3 control-label">Trip name</label>
+        <div class="col-sm-9">
+            <input type="text" name="name" class="form-control" placeholder="Type title of the trip">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="start_date" class="col-sm-3 control-label">Starts: </label>
+        <div class="col-sm-9">
+            <input type="date" name="start_date" class="form-control"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="end_date" class="col-sm-3 control-label">Ends: </label>
+        <div class="col-sm-9">
+            <input type="date" name="end_date" class="form-control"/>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <div class="col-sm-offset-5 col-sm-7">
+            <button type="submit" class="btn btn-default">Submit</button>
+        </div>
+    </div>
+</form>
+</div>
+{% endblock %}

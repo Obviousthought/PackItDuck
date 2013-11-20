@@ -1,13 +1,27 @@
 from flask import Flask, render_template, redirect, request, g, session, url_for, flash
-from model import User, Trip, PackingList, PackListItems, Item, ActivityItem, Activity
+from model import User, Trip, PackingList, PackListItems, Item, ActivityItem, Activity, TripActivity
 from flask.ext.login import LoginManager, login_required, login_user, current_user
 from flaskext.markdown import Markdown
+from flask.ext.admin import Admin
+from flask.ext.admin.contrib.sqla import ModelView
 import config
 import forms
 import model
+import datetime
 
 app = Flask(__name__)
 app.config.from_object(config)
+
+def format_datetime(date, fmt='%c'):
+    # check whether the value is a datetime object
+    if not isinstance(date, (datetime.date, datetime.datetime)):
+        try:
+            date = datetime.datetime.strptime(str(date), '%Y-%m-%d').date()
+        except Exception, e:
+            return date
+    return date.strftime(fmt)
+
+app.jinja_env.filters['datetime'] = format_datetime
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -106,10 +120,23 @@ def profile(user_id):
     user = model.get_user_by_id(user_id)
 
     packlist_id = model.get_user_packlist(user_id)
+    # trip_name = model.get_user_trips(user_id)
 
     return render_template("home_page.html", user_id=user_id, username=user.username, packlist_id=packlist_id, email=user.email, profile_link=profile_link)
 
 # @app.route("/profile/<user_id>/<")
+
+
+@app.route("/profile/trip")
+@login_required
+def create_trip():
+    form = forms.NewTripForm(request.form)
+    if not form.validate():
+        flash("All fields must be filled!")
+        return render_template("new_trip.html")
+
+    trip = Trip(name=form.name.data, start_date=form.start_date.data, end_date=form.end_date.data)
+    current_user.trips.append(trip)
 
 
 
@@ -122,4 +149,26 @@ def logout():
 
 
 if __name__ == "__main__":
+    admin = Admin(app)
+    admin.add_view(ModelView(model.User, model.session))
+    admin.add_view(ModelView(model.Trip, model.session))
+    admin.add_view(ModelView(model.PackingList, model.session))
+    admin.add_view(ModelView(model.PackListItems, model.session))
+    admin.add_view(ModelView(model.Activity, model.session))
+    admin.add_view(ModelView(model.Item, model.session))
+    admin.add_view(ModelView(model.TripActivity, model.session))
+    admin.add_view(ModelView(model.ActivityItem, model.session))
     app.run(debug = True)
+
+
+
+
+
+
+
+
+
+
+
+
+

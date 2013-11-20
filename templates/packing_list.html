@@ -1,0 +1,27 @@
+{% extends 'master.html' %}
+
+
+{% block body %}
+
+{% for message in get_flashed_messages() %}
+      <p>{{ message }}</p>
+{% endfor %}
+
+
+<h2>Trip: {{trip_name}}</h2>
+</br>
+<h3>Packlist id: {{packlist_id}}</h3>
+
+<div>
+	<ul>
+		{% for item in packlist %}
+
+		<li>Item: {{item}}</li>
+
+		{% endfor %}
+	</ul>
+</div>
+
+<a href="/profile">Home</a>
+
+{% endblock %}
