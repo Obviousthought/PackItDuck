@@ -8,20 +8,18 @@
 {% endfor %}
 
 
-<h2>Trip: {{trip_name}}</h2>
-</br>
-<h3>Packlist id: {{packlist_id}}</h3>
+<h2>Trip: {{trip.name}}</h2>
 
 <div>
 	<ul>
-		{% for item in packlist %}
+		{% for item in list_of_items %}
 
-		<li>Item: {{item}}</li>
+		<li>Item: {{item.name}}</li>
 
 		{% endfor %}
 	</ul>
 </div>
 
-<a href="/profile">Home</a>
+<!--	<a href="/profile">Home</a>	-->
 
 {% endblock %}

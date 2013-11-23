@@ -1,7 +1,7 @@
 import flask
 from flask import request, redirect, url_for, flash
 from flask.ext.wtf as wtf
-from sqlalchemy import Integer, String, DateTime, Text
+from sqlalchemy import Integer, String, Text #DateTime (DateTimeField)
 import sqlalchemy.orm
 import wtforms
 from flask import Blueprint
@@ -100,8 +100,8 @@ class Skaffold(object):
     def choose_field_validator(self, db_type, field_name, prop):
         type_map = { "VARCHAR": wtf.TextField,
                      "INTEGER": wtf.IntegerField,
-                     "DATETIME": DateTimeField,
-                     "DATE": DateField,
+                     # "DATETIME": wtforms.DateTimeField,
+                     # "DATE": wtforms.DateField,
                      "TEXT": wtf.TextAreaField
                 }
 
@@ -151,17 +151,17 @@ class Skaffold(object):
         self.validator = validator_form
 
 
-class DateTimeInput(wtforms.widgets.Input):
-    input_type = "datetime"
+# class DateTimeInput(wtforms.widgets.Input):
+#     input_type = "datetime"
 
-class DateInput(wtforms.widgets.Input):
-    input_type = "date"
+# class DateInput(wtforms.widgets.Input):
+#     input_type = "date"
 
-class DateTimeField(wtf.DateTimeField):
-    widget = DateTimeInput()
+# class DateTimeField(wtforms.DateTimeField):
+#     widget = DateTimeInput()
 
-class DateField(wtf.DateField):
-    widget = DateInput()
+# class DateField(wtforms.DateField):
+#     widget = DateInput()
 
 class ModelWrapper(object):
     def __init__(self, wrapped):

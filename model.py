@@ -2,11 +2,6 @@ import config
 import bcrypt
 from datetime import datetime, date, timedelta
 
-# from flask import Flask, render_template, redirect, request, g, session, url_for, flash
-# from flask.ext.login import LoginManager, login_required, login_user, current_user
-# from flask.ext.admin import Admin
-# from flask.ext.admin.contrib.sqla import ModelView
-
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy import Column, Integer, String, DateTime, Text, Index
@@ -15,10 +10,8 @@ from sqlalchemy.orm import sessionmaker, scoped_session, relationship, backref
 
 from flask.ext.login import UserMixin
 
-engine = create_engine(config.DB_URI, echo=False) 
-session = scoped_session(sessionmaker(bind=engine,
-						 autocommit = False,
-						 autoflush = False))
+engine = create_engine(config.DB_URI, echo=False)
+session = scoped_session(sessionmaker(bind=engine, autocommit = False, autoflush = False))
 
 Base = declarative_base()
 Base.query = session.query_property()
@@ -48,9 +41,9 @@ class Trip(Base):
 	id = Column(Integer, primary_key=True)
 	user_id = Column(Integer, ForeignKey('users.id'))
 	name = Column(String(64), nullable=False)
-	destination= Column(String(100), nullable=False)
-	start_date = Column(DateTime, nullable=False)
-	end_date = Column(DateTime, nullable=False)
+	destination= Column(String(100), nullable=True) # <-- Null for now
+	start_date = Column(DateTime, nullable=True) #Null for now
+	end_date = Column(DateTime, nullable=True) # Null for now
 
 	user = relationship("User", backref=backref("trips", order_by=id))
 
@@ -126,8 +119,9 @@ def create_user(email, username, password):
 	session.add(new_user)
 	session.commit()
 
-def create_trip(user_id, name, destination, start_date, end_date):
-    new_trip = Trip(name=name, destination=destination, start_date=start_date, end_date=end_date)
+def create_trip(name):
+	# add destination, start_date, end_date  (DATETIME NOT WORKING!!!!)
+    new_trip = Trip(name=name)
     session.add(new_trip)
     session.commit()
 
@@ -146,30 +140,11 @@ def create_trip_activity(trip_id, activity_id):
     session.add(new_trip_activity)
     session.commit()
 
+
 #### End Database Configuration ####
 
-#### Call Functions ####
+###############################################################################
 
-# retrieves user attributes as a list with the user's id
-def get_user_by_id(id):
-	user = session.query(User).get(id)
-	return user
-
-
-# Returns a list of trip_id's for the user:
-def get_user_packlist(id):
-	packlist = session.query(PackingList).filter_by(user_id=id)
-	user_trips = []
-	for p in packlist:
-		user_trips.append(p.id)
-	return user_trips
-
-# def get_user_trips(id):
-# 	trip = session.query(Trip)filter_by(user_id=id)
-# 	trip_list = []
-# 	for t in trip:
-# 		trip_list.append(t.name)
-# 	return trip_list
 
 # Check if there is a user with a certain username and password:
 def validate_user(username, password):
@@ -193,6 +168,133 @@ def username_exists(username):
         return False
     return True
 
+
+####### "GET" Functions #########
+
+
+## USER ##
+
+def get_user_by_id(id):
+	user = session.query(User).get(id)
+	return user
+
+def get_user_by_username(username):
+	user = session.query(User).get(username)
+	return user
+
+def get_user_by_trip_id(id):
+	trip = get_trip_by_id(id)
+	user_id = trip.user_id
+	user = get_user_by_id(user_id)
+	return user
+
+
+###########################
+
+## TRIP ##
+
+# Get a trip's attributes by trip_id 
+def get_trip_by_id(id):
+	trip = session.query(Trip).get(id)
+	return trip
+
+# Get a list of trip names by the user's id
+def get_user_trip_names(id):
+	trip = session.query(Trip).filter_by(user_id=id)
+	trip_list = []
+	for t in trip:
+		trip_list.append(t.name)
+	return trip_list
+
+# Get's a trip's attributes by trip name
+def get_trip_by_name(name):
+	trip = session.query(Trip).filter_by(name=name).first()
+	return trip
+
+
+#####################
+
+## PACKING_LIST ##
+
+# Get a list of packing_list_id's by user_id:
+def get_user_packlist(id):
+	packlist = session.query(PackingList).filter_by(user_id=id)
+	user_trips = []
+	for p in packlist:
+		user_trips.append(p.id)
+	return user_trips
+
+# Get a dictionary of item names for a packing list (by packing_list_id)
+def get_packing_dict(id):
+	item_id_list = session.query(PackListItems).filter_by(packing_list_id=id)
+	packlist_items = {}
+	for item in item_id_list:
+		packlist_items[item.name] = 1
+	return packlist_items
+
+# Get a list of item names for a packing list by packing_list_id
+# def get_packing_list(id):
+# 	item_id_list = session.query(PackListItems).filter_by(packing_list_id=id)
+# 	list_item_names = []
+# 	item_id = item_id_list[item_id]
+# 	for item in item_id_list:
+
+# 		item_name = get_item_name_by_id(item_id)
+# 		list_item_names.append(item.name)
+
+######## ABOVE IS NOT WORKING YET!!!! #############
+
+# Get a packing list of items by trip name
+def get_pl_items_by_trip_name(name):
+	trip = get_trip_by_name(name)
+	packing_list = session.query(PackingList).filter_by(trip_id=trip.id)
+	packlist_items = get_packing_list(packing_list_id=packing_list.id)
+	return packlist_items
+
+#####################
+
+## ITEM ##
+
+# Get a list of all items in DATABASE
+def get_list_of_items():
+	items = session.query(Item).filter_by(name=name)
+	item_list = []
+	for i in items:
+		item_list.append(i.name)
+	return item_list
+
+# Get a dictionary of all items in DATABASE
+def get_dict_of_items():
+	item_dict = {}
+	item_list = get_list_of_items()
+	for item in item_list:
+		item_dict[item] = 1
+	return item_dict
+
+# Get item name by item id
+def get_item_name_by_id(id):
+	item = session.query(Item).filter_by(id)
+	if item.id == id:
+		return item.name
+
+
+#####################
+
+
+
+
+######## "Pull Items" Functions #########
+
+# Get activity by trip_id
+# def get_activity_by_trip(id):
+# 	a
+
+# Get a list of item's by activity_id
+# def get_items_by_activity(id):
+# 	activity_ = session.query(Activity).filter_by()
+
+
+
 def create_tables():
 	Base.metadata.create_all(engine)
 
@@ -200,32 +302,13 @@ def main():
 	pass
 
 if __name__ == "__main__":
-	# admin = Admin(app)
-	# admin.add_view(ModelView(User, session))
 	main()
-	# create_tables()
 
 
 
 
 
 
-
-
-
-
-# def connect():
-#     global ENGINE
-#     global Session
-
-#     # ENGINE = create_engine("sqlite:///ratings.db", echo=True)
-#     Session = scoped_session(sessionmaker(bind=ENGINE, autocommit=False, autoflush=False))
-#     Base = declarative_base()
-#     Base.query = Session.query_property()
-#     # if you are remaking the dbs, uncomment the following!
-#     # Base.metadata.create_all(ENGINE)
-
-#     return Session()
 
 
 

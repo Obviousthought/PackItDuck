@@ -1,4 +1,4 @@
-from wtforms import Form, TextField, TextAreaField, PasswordField, validators, DateField
+from wtforms import Form, TextField, TextAreaField, PasswordField, validators, DateField, DateTimeField
 
 class LoginForm(Form):
     email = TextField("Email", [validators.Required(), validators.Email()])
@@ -11,5 +11,6 @@ class LoginForm(Form):
 
 class NewTripForm(Form):
     name = TextField("name", [validators.Required()])
-    start_date = DateField("start_date", [validators.Required()])
-    end_date = DateField("end_date", [validators.Required()])
+#    destination = TextField("destination", [validators.Required()])
+    # start_date = DateField("start_date", [validators.Required()])
+    # end_date = DateField("end_date", [validators.Required()])

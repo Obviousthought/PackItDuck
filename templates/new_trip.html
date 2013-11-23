@@ -6,9 +6,17 @@
     <div class="form-group">
         <label for="name" class="col-sm-3 control-label">Trip name</label>
         <div class="col-sm-9">
-            <input type="text" name="name" class="form-control" placeholder="Type title of the trip">
+            <input type="text" name="name" class="form-control" placeholder="Give your trip a name">
         </div>
     </div>
+
+<!--   <div class="form-group">
+        <label for="destination" class="col-sm-3 control-label">Where are you going?</label>
+        <div class="col-sm-9">
+            <input type="text" name="destination" class="form-control" placeholder="Destination">
+        </div>
+    </div>  -->
+
     <div class="form-group">
         <label for="start_date" class="col-sm-3 control-label">Starts: </label>
         <div class="col-sm-9">
@@ -22,11 +30,41 @@
         </div>
     </div>
     
+<!--    <div class="form-group">
+        <label for="activity" class="col-sm-3 control-label">Activities: </label>
+        <div class="btn-group" data-toggle="buttons-radio">
+            <input type='hidden' name="activity" value='default value'>
+            <button type="button" name="surfing" class="btn btn-primary active">Surfing</button>
+            <button type="button" name="swimming" class="btn btn-primary">Swimming</button>
+            <button type="button" name="scuba diving" class="btn btn-primary">Scuba Diving</button>
+        </div>
+    </div>  -->
+
+
+
+    <div class="form-group">
+        <label for="activity" class="col-sm-3 control-label">Activities: </label>
+        <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default **active**">
+                <input type="radio" name="surfing" id="activity_id" value="1">Surfing</label>
+            <label class="btn btn-default">
+                <input type="radio" name="swimming" id="activity_id" value="2">
+            Swimming</label>
+            <label class="btn btn-default">
+                <input type="radio" name="scuba diving" id="activity_id" value="3">
+            Scuba Diving</label>
+        </div>
+    </div>
+
+
+
+
     <div class="form-group">
         <div class="col-sm-offset-5 col-sm-7">
             <button type="submit" class="btn btn-default">Submit</button>
         </div>
     </div>
+
 </form>
 </div>
 {% endblock %}

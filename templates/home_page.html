@@ -9,20 +9,21 @@
 
 
 <h2>Hello {{username}}!</h2>
+
+<a href="/new_trip">Create a new trip</a>
+
 <h3>Your trips will display here:</h3>
 
 <div>
 	<ul>
-		{% for packlist in packlist_id %}
-
-		<li>Packing list id: <a href="/profile/{{user_id}}/{{packlist}}">{{packlist}}</a></li>
-
+		{% for trip_name in trip_names %}
+		<li>Trip: <a href="/profile/{{trip_name}}">{{trip_name}}</a></li>
 		{% endfor %}
 	</ul>
 </div>
 
 
-
-<a href="/logout">Logout</a>
+<!--
+<a href="/logout">Logout</a>	-->
 
 {% endblock %}

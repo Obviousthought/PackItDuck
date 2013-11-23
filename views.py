@@ -37,23 +37,13 @@ Markdown(app)
 
 @app.route("/")
 def index():
-    # trips = Trip.query.all()
-
-    if session.get('id'):
-        user_id = session['id']
-        user = model.get_user_by_id(user_id)
-        return redirect(url_for("profile", user_id=user_id))
+    if session.get('username'):
+        username = session['username']
+        user = model.get_user_by_username(username)
+        return redirect(url_for("profile", username=username))
     else:
         return render_template("index.html")
 
-
-    # user_id = session.get('id')
-    # if user_id == None:
-    #   return render_template("index.html")
-    # else:
-    #   user = model.get_user_by_id(user_id)
-    #   profile_link = my_profile_link()
-    #   return redirect(url_for("profile", user_id=user_id, profile_link=profile_link))
 
 @app.route("/login")
 def login():
@@ -74,7 +64,7 @@ def authenticate():
         return render_template("login.html")
     else:
         login_user(user)
-        return redirect(url_for("profile", user_id=user.id))
+        return redirect(url_for("profile", username=username))
 
 @app.route("/register")
 def register():
@@ -98,46 +88,62 @@ def create_user():
         return redirect(url_for("register"))
 
     model.create_user(email, username, password)
-    flash("You've successfully made an account!")
+    user = model.get_user_by_username(username)
 
-    user_id = session.get('id')
+    return redirect(url_for("profile", username=username))
+
+@app.route("/profile/<username>")
+@login_required
+def profile(username):
+    # user = model.get_user_by_username(username)
+    session_user_id = session.get('id')
+    user_id = session['user_id']
     user = model.get_user_by_id(user_id)
-    id = session.get('id')
-
-    return redirect(url_for("profile", user_id=user.id))
-
-def my_profile_link():
-    if session.get('id'):
-        profile_link = session['id']
-    else:
-        profile_link = None
-    return profile_link
-
-@app.route("/profile/<user_id>")
-# @login_required
-def profile(user_id):
-    profile_link = my_profile_link()
-    user = model.get_user_by_id(user_id)
-
     packlist_id = model.get_user_packlist(user_id)
-    # trip_name = model.get_user_trips(user_id)
-
-    return render_template("home_page.html", user_id=user_id, username=user.username, packlist_id=packlist_id, email=user.email, profile_link=profile_link)
-
-# @app.route("/profile/<user_id>/<")
+    trip_names = model.get_user_trip_names(user_id)
+    # packlist_items = model.get_
 
 
-@app.route("/profile/trip")
+    return render_template("home_page.html", user_id=user_id, username=user.username, packlist_id=packlist_id, trip_names=trip_names, email=user.email)
+
+
+@app.route("/new_trip")
+@login_required
+def new_trip():
+    return render_template("new_trip.html")
+
+@app.route("/new_trip", methods=["POST"])
 @login_required
 def create_trip():
     form = forms.NewTripForm(request.form)
     if not form.validate():
         flash("All fields must be filled!")
         return render_template("new_trip.html")
+    name = request.form.get("name")
+#    destination = request.form.get("destination")
+    start_date= request.form.get("start_date")
+    end_date=request.form.get("end_date")
+    # Create the Trip
+    model.create_trip(name) # add DESTINATION, start_date, end_date
 
-    trip = Trip(name=form.name.data, start_date=form.start_date.data, end_date=form.end_date.data)
-    current_user.trips.append(trip)
+#### THIS IS NOT WORKING! FIX IT!!!!
 
+    # session_trip_name = session.get('name')
+    name = session['session_trip_name']
+    trip = model.get_trip_by_name(name)
+    user = get_user_by_trip_id(trip.id)
+    # Create the Packing List
+    model.create_packinglist(trip_id=trip.id, user_id=user.id)
+
+    return redirect(url_for("packing_list", trip_id=trip.id, user_id=user.id))
+
+@app.route("/<trip_name>")
+@login_required
+def packing_list(trip_id):
+    trip = model.get_trip_by_id(trip_id)
+    list_of_items = model.session.query(Item).filter_by(name).all()
+
+    return render_template("packing_list.html", trip=trip, list_of_items=list_of_items)   
 
 
 @app.route("/logout")
