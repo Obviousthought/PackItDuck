@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, ForeignKey
 from sqlalchemy import Column, Integer, String, DateTime, Text, Index
 
-from sqlalchemy.orm import sessionmaker, scoped_session, relationship, backref
+from sqlalchemy.orm import sessionmaker, scoped_session, relationship, backref, joinedload
 
 from flask.ext.login import UserMixin
 
@@ -34,6 +34,19 @@ class User(Base, UserMixin):
 	def authenticate(self, password):
 		password = password.encode("utf-8")
 		return bcrypt.hashpw(password, self.salt.encode("utf-8")) == self.password
+
+	def is_active(self):
+		return True
+
+	def is_authenticated(self):
+		return True
+
+	def get_id(self):
+		return str(self.id)
+	def is_anonymous(self):
+		return False
+	def is_authenticated(self):
+		return True
 
 
 class Trip(Base):
@@ -119,24 +132,24 @@ def create_user(email, username, password):
 	session.add(new_user)
 	session.commit()
 
-def create_trip(name):
+def create_trip(user_id, name):
 	# add destination, start_date, end_date  (DATETIME NOT WORKING!!!!)
-    new_trip = Trip(name=name)
+    new_trip = Trip(user_id=user_id,name=name)
     session.add(new_trip)
     session.commit()
 
 def create_packinglist(user_id, trip_id):
-    new_packinglist = PackingList()
+    new_packinglist = PackingList(user_id=user_id, trip_id=trip_id)
     session.add(new_packinglist)
     session.commit()
 
 def create_packlist_item(packing_list_id, item_id):
-    new_packlist_items = PackListItems()
+    new_packlist_items = PackListItems(packing_list_id=packing_list_id, item_id=item_id)
     session.add(new_packlist_items)
     session.commit()
 
 def create_trip_activity(trip_id, activity_id):
-    new_trip_activity = TripActivity()
+    new_trip_activity = TripActivity(trip_id=trip_id, activity_id=activity_id)
     session.add(new_trip_activity)
     session.commit()
 
@@ -175,19 +188,19 @@ def username_exists(username):
 ## USER ##
 
 def get_user_by_id(id):
-	user = session.query(User).get(id)
+	user = session.query(User).filter_by(id=id).one()
 	return user
 
 def get_user_by_username(username):
-	user = session.query(User).get(username)
+	user = session.query(User).filter_by(username=username).first()
 	return user
 
 def get_user_by_trip_id(id):
-	trip = get_trip_by_id(id)
-	user_id = trip.user_id
-	user = get_user_by_id(user_id)
+	# trip = 
+	user = get_user_by_id(get_trip_by_id(id))
 	return user
 
+	# user = session.query(Trip).options(joinedload(Trip.user_id)).filter_by(id=id).one()
 
 ###########################
 
@@ -195,15 +208,21 @@ def get_user_by_trip_id(id):
 
 # Get a trip's attributes by trip_id 
 def get_trip_by_id(id):
-	trip = session.query(Trip).get(id)
+	trip = session.query(Trip).filter_by(id=id).one()
+	return trip
+
+def get_trip_by_packlist_id(id):
+	packing_list = session.query(PackingList).filter_by(id=id).one()
+	trip_id = packing_list.trip_id
+	trip = get_trip_by_id(trip_id)
 	return trip
 
 # Get a list of trip names by the user's id
 def get_user_trip_names(id):
-	trip = session.query(Trip).filter_by(user_id=id)
+	trips = session.query(Trip).filter_by(user_id=id).order_by(Trip.name).all()
 	trip_list = []
-	for t in trip:
-		trip_list.append(t.name)
+	for trip in trips:
+		trip_list.append(trip.name)
 	return trip_list
 
 # Get's a trip's attributes by trip name
@@ -218,15 +237,15 @@ def get_trip_by_name(name):
 
 # Get a list of packing_list_id's by user_id:
 def get_user_packlist(id):
-	packlist = session.query(PackingList).filter_by(user_id=id)
+	packlists = session.query(PackingList).filter_by(user_id=id).all()
 	user_trips = []
-	for p in packlist:
-		user_trips.append(p.id)
+	for packlist in packlists:
+		user_trips.append(packlist.id)
 	return user_trips
 
 # Get a dictionary of item names for a packing list (by packing_list_id)
 def get_packing_dict(id):
-	item_id_list = session.query(PackListItems).filter_by(packing_list_id=id)
+	item_id_list = session.query(PackListItems).filter_by(packing_list_id=id).all()
 	packlist_items = {}
 	for item in item_id_list:
 		packlist_items[item.name] = 1
@@ -247,8 +266,8 @@ def get_packing_dict(id):
 # Get a packing list of items by trip name
 def get_pl_items_by_trip_name(name):
 	trip = get_trip_by_name(name)
-	packing_list = session.query(PackingList).filter_by(trip_id=trip.id)
-	packlist_items = get_packing_list(packing_list_id=packing_list.id)
+	packing_list = session.query(PackingList).filter_by(trip_id=trip.id).first()
+	packlist_items = get_packing_list(packing_list_id=packing_list.id).all()
 	return packlist_items
 
 #####################
@@ -257,10 +276,10 @@ def get_pl_items_by_trip_name(name):
 
 # Get a list of all items in DATABASE
 def get_list_of_items():
-	items = session.query(Item).filter_by(name=name)
+	items = session.query(Item).all()
 	item_list = []
 	for i in items:
-		item_list.append(i.name)
+		item_list.append(i.name)   # .sort()
 	return item_list
 
 # Get a dictionary of all items in DATABASE
@@ -273,15 +292,18 @@ def get_dict_of_items():
 
 # Get item name by item id
 def get_item_name_by_id(id):
-	item = session.query(Item).filter_by(id)
-	if item.id == id:
-		return item.name
+	item = session.query(Item).filter_by(id=id).first()
+	return item.name
 
 
 #####################
 
 
-
+# get trip name and packing list id by trip id
+def trip_name_packlist_id(trip_id):
+	packlist = session.query(PackingList).filter_by(trip_id=trip_id).one()
+	trip = session.query(Trip).filter_by(id=trip_id).one()
+	return trip.name, packlist.id
 
 ######## "Pull Items" Functions #########
 

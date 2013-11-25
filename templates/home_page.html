@@ -3,11 +3,6 @@
 
 {% block body %}
 
-{% for message in get_flashed_messages() %}
-      <p>{{ message }}</p>
-{% endfor %}
-
-
 <h2>Hello {{username}}!</h2>
 
 <a href="/new_trip">Create a new trip</a>
@@ -17,7 +12,7 @@
 <div>
 	<ul>
 		{% for trip_name in trip_names %}
-		<li>Trip: <a href="/profile/{{trip_name}}">{{trip_name}}</a></li>
+		<li>Trip: <a href="{{ url_for('packing_list', packlist_id=packlist_id) }}">{{trip_name}}</a></li>
 		{% endfor %}
 	</ul>
 </div>
