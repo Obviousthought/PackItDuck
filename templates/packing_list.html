@@ -8,15 +8,38 @@
 {% endfor %}
 
 
-<h2>Trip:</h2>
+<h2>Trip: {{trip_name}}</h2>
+</br>
 
+<!-- {%if trip_activity_list >= 2%}
+	{% for trip_activity in trip_activity_list %}
+		<h3>Activity: {{trip_activity.id}}</h3>
+	{%endfor%}
+	{%endif%} -->
+
+{%if activity != None %}
+<h3>Activity: {{activity.name}}</h3>
+{% endif %}
+
+</br>
+{% if start_date != None %}
+<h3>Start Date: {{start_date}}</h3>
+{%endif%}
+</br>
+{%if end_date != None%}
+<h3>End Date: {{end_date}}</h3>
+{%endif%}
+</br>
 <div>
 	<ul>
 		{% for item in list_of_items %}
 
-		<li>Item: {{item.name}}</li>
+		<li>Item: {{item}}</li>
 
 		{% endfor %}
+
+<!-- make function for list of items for all attributes, not just name -->
+
 	</ul>
 </div>
 

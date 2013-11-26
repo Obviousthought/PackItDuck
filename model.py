@@ -10,7 +10,10 @@ from sqlalchemy.orm import sessionmaker, scoped_session, relationship, backref, 
 
 from flask.ext.login import UserMixin
 
-engine = create_engine(config.DB_URI, echo=False)
+import pdb
+# pdb.set_trace()  <--stops console running server at the point you insert this so you can interact with your code pythonically
+
+engine = create_engine(config.DB_URI, echo=True)
 session = scoped_session(sessionmaker(bind=engine, autocommit = False, autoflush = False))
 
 Base = declarative_base()
@@ -54,19 +57,13 @@ class Trip(Base):
 	id = Column(Integer, primary_key=True)
 	user_id = Column(Integer, ForeignKey('users.id'))
 	name = Column(String(64), nullable=False)
-	destination= Column(String(100), nullable=True) # <-- Null for now
-	start_date = Column(DateTime, nullable=True) #Null for now
-	end_date = Column(DateTime, nullable=True) # Null for now
+	destination= Column(String(100), nullable=True) # <-- Change to False later
+	start_date = Column(DateTime, nullable=True) # Change to False later
+	end_date = Column(DateTime, nullable=True) # Change to False later
+	total_days = Column(Integer, nullable=True) # Change to False later
 
-	user = relationship("User", backref=backref("trips", order_by=id))
-
-	def date_range(self):
-		length_of_trip = []
-		current = self.start_date
-		while current <= self.end_date:
-			length_of_trip.append(current)
-			current = current + timedelta(days=1)
-		return length_of_trip[0]
+	## Relationship
+	user = relationship("User", backref=backref("trips", order_by=id,lazy='dynamic'))
 
 class PackingList(Base):
 	__tablename__="packing_lists"
@@ -74,13 +71,9 @@ class PackingList(Base):
 	user_id = Column(Integer, ForeignKey('users.id'))
 	trip_id = Column(Integer, ForeignKey('trips.id'))
 
-### Write code to auto-update user_id in Trip and PackingList ####
-
+	## Relationship
 	user = relationship("User", backref=backref("packing_lists", order_by=id))
 	trip = relationship("Trip", backref=backref("packing_lists", order_by=id))
-
-# google sqlalchemy: auto-update for foreignkeys
-# figure out why db let you add packing list to a trip that didn't exist
 
 
 class PackListItems(Base):
@@ -89,6 +82,7 @@ class PackListItems(Base):
 	packing_list_id=Column(Integer, ForeignKey('packing_lists.id'))
 	item_id=Column(Integer, ForeignKey('items.id'))
 
+	## Relationship
 	packing_list = relationship("PackingList", backref=backref("packlist_items", order_by=id))
 	item = relationship("Item", backref=backref("packlist_items", order_by=id))
 
@@ -103,6 +97,7 @@ class ActivityItem(Base):
 	item_id = Column(Integer, ForeignKey('items.id'))
 	activity_id = Column(Integer, ForeignKey('activities.id'))
 
+	## Relationship
 	item = relationship("Item", backref=backref("activity_items", order_by=id))
 	activity = relationship("Activity", backref=backref("activity_items", order_by=id))
 
@@ -117,9 +112,9 @@ class TripActivity(Base):
 	trip_id = Column(Integer, ForeignKey('trips.id'))
 	activity_id = Column(Integer, ForeignKey('activities.id'))
 
+	## Relationship
 	trip = relationship("Trip", backref=backref("trip_activities", order_by=id))
 	activity = relationship("Activity", backref=backref("trip_activities", order_by=id))
-
 
 ### End of class declarations  ###
 
@@ -132,11 +127,15 @@ def create_user(email, username, password):
 	session.add(new_user)
 	session.commit()
 
-def create_trip(user_id, name):
-	# add destination, start_date, end_date  (DATETIME NOT WORKING!!!!)
-    new_trip = Trip(user_id=user_id,name=name)
-    session.add(new_trip)
-    session.commit()
+def create_trip(user_id, name, start_date, end_date):
+	# add destination
+	new_start = datetime.strptime(start_date, '%Y-%m-%d')
+	new_end = datetime.strptime(end_date, '%Y-%m-%d')
+	days_delta = new_end - new_start
+	total_days = days_delta.days + 1
+	new_trip = Trip(user_id=user_id,name=name,start_date=new_start, end_date=new_end, total_days=total_days)
+	session.add(new_trip)
+	session.commit()
 
 def create_packinglist(user_id, trip_id):
     new_packinglist = PackingList(user_id=user_id, trip_id=trip_id)
@@ -196,11 +195,8 @@ def get_user_by_username(username):
 	return user
 
 def get_user_by_trip_id(id):
-	# trip = 
 	user = get_user_by_id(get_trip_by_id(id))
 	return user
-
-	# user = session.query(Trip).options(joinedload(Trip.user_id)).filter_by(id=id).one()
 
 ###########################
 
@@ -243,13 +239,8 @@ def get_user_packlist(id):
 		user_trips.append(packlist.id)
 	return user_trips
 
-# Get a dictionary of item names for a packing list (by packing_list_id)
-def get_packing_dict(id):
-	item_id_list = session.query(PackListItems).filter_by(packing_list_id=id).all()
-	packlist_items = {}
-	for item in item_id_list:
-		packlist_items[item.name] = 1
-	return packlist_items
+
+
 
 # Get a list of item names for a packing list by packing_list_id
 # def get_packing_list(id):
@@ -261,7 +252,8 @@ def get_packing_dict(id):
 # 		item_name = get_item_name_by_id(item_id)
 # 		list_item_names.append(item.name)
 
-######## ABOVE IS NOT WORKING YET!!!! #############
+		##### ABOVE IS NOT WORKING YET!!!! ######
+
 
 # Get a packing list of items by trip name
 def get_pl_items_by_trip_name(name):
@@ -269,6 +261,7 @@ def get_pl_items_by_trip_name(name):
 	packing_list = session.query(PackingList).filter_by(trip_id=trip.id).first()
 	packlist_items = get_packing_list(packing_list_id=packing_list.id).all()
 	return packlist_items
+
 
 #####################
 
@@ -282,13 +275,7 @@ def get_list_of_items():
 		item_list.append(i.name)   # .sort()
 	return item_list
 
-# Get a dictionary of all items in DATABASE
-def get_dict_of_items():
-	item_dict = {}
-	item_list = get_list_of_items()
-	for item in item_list:
-		item_dict[item] = 1
-	return item_dict
+
 
 # Get item name by item id
 def get_item_name_by_id(id):
@@ -308,14 +295,35 @@ def trip_name_packlist_id(trip_id):
 ######## "Pull Items" Functions #########
 
 # Get activity by trip_id
-# def get_activity_by_trip(id):
-# 	a
+def get_activity_by_trip(id):
+	trip_activity = session.query(TripActivity).filter_by(trip_id=id).first()
+	activity = session.query(Activity).filter_by(id=trip_activity.activity_id).first()
+	return activity
 
 # Get a list of item's by activity_id
 # def get_items_by_activity(id):
 # 	activity_ = session.query(Activity).filter_by()
 
 
+######### Dictionaries for possible later use #############
+
+# Get a dictionary of all items in DATABASE
+def get_dict_of_items():
+	item_dict = {}
+	item_list = get_list_of_items()
+	for item in item_list:
+		item_dict[item] = 1
+	return item_dict
+
+# Get a dictionary of item names for a packing list (by packing_list_id)
+def get_packing_dict(id):
+	item_id_list = session.query(PackListItems).filter_by(packing_list_id=id).all()
+	packlist_items = {}
+	for item in item_id_list:
+		packlist_items[item.name] = 1
+	return packlist_items
+
+###########################################################
 
 def create_tables():
 	Base.metadata.create_all(engine)

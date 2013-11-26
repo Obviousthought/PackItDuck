@@ -110,3 +110,38 @@ def make_new_user(email, password, age, zipcode):
     session.add(new_user)
     session.commit()
 
+
+
+# login/authenticate using flask-peewee for views.py
+
+from flask_peewee.auth import Auth
+from flask_peewee.db import Database
+from config import db
+
+auth = Auth(app, db, user_model=User)
+
+
+
+### Datetime Format for views.py
+def format_datetime(date, fmt='%c'):
+    # check whether the value is a datetime object
+    if not isinstance(date, (datetime.date, datetime.datetime)):
+        try:
+            date = datetime.datetime.strptime(str(date), '%Y-%m-%d').date()
+        except Exception, e:
+            return date
+    return date.strftime(fmt)
+
+app.jinja_env.filters['datetime'] = format_datetime
+
+
+
+### Views.py def index():
+    if auth.get_logged_in_user():
+        username = current_user.username
+        return redirect(url_for("profile", username=username))
+    else:
+        return render_template("index.html")
+
+
+

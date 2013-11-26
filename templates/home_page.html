@@ -12,7 +12,7 @@
 <div>
 	<ul>
 		{% for trip_name in trip_names %}
-		<li>Trip: <a href="{{ url_for('packing_list', packlist_id=packlist_id) }}">{{trip_name}}</a></li>
+		<li>Trip: <a href="{{ url_for('packing_list', trip_name=trip_name) }}">{{trip_name}}</a></li>
 		{% endfor %}
 	</ul>
 </div>
