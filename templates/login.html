@@ -2,26 +2,22 @@
 
 {% block body %}
 
-<form class="login" method="POST">
-
-    <h2 class = "login-heading">Please Login</h2>
-
-	<ul>
-
-      {% for message in get_flashed_messages() %}
-
-      	<li>{{ message }}</li>
-
-      {% endfor %}
-      
-	</ul>
-
-    <input type="text" class ="form-control" placeholder="Username" name="username"><br>
-
-    <input type="password" class="form-control" placeholder="Password" name="password"><br>
-
-    <input type="submit" class="btn btn-lg btn-primary btn-block" value="Submit">
-
-</form>
+  <div class="jumbotron">
+    <h1>Welcome to PackingZen!</h1>
+      <p>Prepare for your next trip using this packing list generator.</p>
+      <form class="login" method="POST" action="/login">
+        <h2 class = "login-heading">Login Here</h2>
+        <input type="text" class ="form-control" placeholder="username" name="username"><br>
+        <input type="password" class="form-control" placeholder="password" name="password"><br>
+        <ul>
+          {% for message in get_flashed_messages() %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        <input type="submit" class="btn btn-lg btn-primary btn-block" value="Submit">
+      </form>
+      <p>Don't have an account?</p>
+      <p><a class="btn btn-primary btn-lg" role="button" href="/register">Sign Up Here</a></p>
+  </div>
 
 {% endblock %}

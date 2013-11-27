@@ -138,19 +138,19 @@ def create_trip(user_id, name, start_date, end_date):
 	session.commit()
 
 def create_packinglist(user_id, trip_id):
-    new_packinglist = PackingList(user_id=user_id, trip_id=trip_id)
-    session.add(new_packinglist)
-    session.commit()
+	new_packinglist = PackingList(user_id=user_id, trip_id=trip_id)
+	session.add(new_packinglist)
+	session.commit()
 
 def create_packlist_item(packing_list_id, item_id):
-    new_packlist_items = PackListItems(packing_list_id=packing_list_id, item_id=item_id)
-    session.add(new_packlist_items)
-    session.commit()
+	new_packlist_items = PackListItems(packing_list_id=packing_list_id, item_id=item_id)
+	session.add(new_packlist_items)
+	session.commit()
 
 def create_trip_activity(trip_id, activity_id):
-    new_trip_activity = TripActivity(trip_id=trip_id, activity_id=activity_id)
-    session.add(new_trip_activity)
-    session.commit()
+	new_trip_activity = TripActivity(trip_id=trip_id, activity_id=activity_id)
+	session.add(new_trip_activity)
+	session.commit()
 
 
 #### End Database Configuration ####
@@ -167,18 +167,18 @@ def validate_user(username, password):
 
 # Check if an email already exists:
 def email_exists(email):
-    user = session.query(User).filter_by(email=email).first()
-    if user == None:
-        return False
-    return True
+	user = session.query(User).filter_by(email=email).first()
+	if user == None:
+		return False
+	return True
 
 
 # Check if a username is already taken:
 def username_exists(username):
-    user = session.query(User).filter_by(username=username).first()
-    if user == None:
-        return False
-    return True
+	user = session.query(User).filter_by(username=username).first()
+	if user == None:
+	  return False
+	return True
 
 
 ####### "GET" Functions #########
@@ -214,11 +214,19 @@ def get_trip_by_packlist_id(id):
 	return trip
 
 # Get a list of trip names by the user's id
-def get_user_trip_names(id):
-	trips = session.query(Trip).filter_by(user_id=id).order_by(Trip.name).all()
+# def get_user_trip_names(id):
+# 	trips = session.query(Trip).filter_by(user_id=id).order_by(Trip.name).all()
+# 	trip_list = []
+# 	for trip in trips:
+# 		trip_list.append(trip.name)
+# 	return trip_list
+
+# Get a list of a user's trips by user id (sorted by start_date)
+def get_user_trips(id):
+	trips = session.query(Trip).filter_by(user_id=id).order_by(Trip.start_date).all()
 	trip_list = []
 	for trip in trips:
-		trip_list.append(trip.name)
+		trip_list.append(trip)
 	return trip_list
 
 # Get's a trip's attributes by trip name

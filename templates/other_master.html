@@ -1,0 +1,65 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>PackingZen</title>
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+        <link href="/static/css/main.css" rel="stylesheet">
+        <script type="text/javascript" src="/static/js/bootstrap.js"></script>
+        <script type="text/javascript" src="/static/js/jquery-2.0.3.min.js"></script>
+    </head>
+
+    <body>
+        <div class="page-header">
+            <h1>PackingZen<small> Relax for your trip</small></h1>
+        </div>
+        <div class="navbar navbar-default navbar-static-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">...</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="/">PackingZen</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-user"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% if not current_user.is_authenticated() %}
+                                <li><a href="{{ url_for('login') }}">Login</a></li>
+                                <li><a href="{{ url_for('register') }}">Register</a></li>
+                                </li>
+                                {%else%}
+                                <li><a href="/new_trip">Create a Trip</a></li>
+                                <li><a href="/profile/{{current_user.username}}">Home</a></li>
+                                </li>
+                                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                                {%endif%}                
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container">
+            <ul>
+            {% for message in get_flashed_messages() %}
+            <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+
+            {% block body %}
+            
+            {% endblock %}
+        </div>
+
+    </body>
+
+</html>

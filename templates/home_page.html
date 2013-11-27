@@ -5,20 +5,17 @@
 
 <h2>Hello {{username}}!</h2>
 
-<a href="/new_trip">Create a new trip</a>
 
 <h3>Your trips will display here:</h3>
 
 <div>
 	<ul>
-		{% for trip_name in trip_names %}
-		<li>Trip: <a href="{{ url_for('packing_list', trip_name=trip_name) }}">{{trip_name}}</a></li>
-		{% endfor %}
+	{% for trip in trip_list %}
+		<li><a href="{{url_for('packing_list', trip_name=trip.name)}}">{{trip.name}}</a>:   {{trip.start_date}}</li>
+	{% endfor %}
 	</ul>
 </div>
 
 
-<!--
-<a href="/logout">Logout</a>	-->
 
 {% endblock %}
