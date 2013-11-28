@@ -3806,9 +3806,25 @@ textarea.input-group-sm > .input-group-btn > .btn {
 .navbar-brand {
   float: left;
   padding: 15px 15px;
-  font-size: 18px;
+  font-size: 35px;
+  font-family:"Quinfo";
   line-height: 20px;
 }
+
+/*@font-face {font-family:"Quinfo-Bold";
+  src:url("QuinfoBOLD.eot?") format("eot"),url("QuinfoBOLD.woff") format("woff"),url("QuinfoBOLD.ttf") format("truetype"),url("QuinfoBOLD.svg#Quinfo-Bold") format("svg");
+  font-weight:normal;
+  font-style:normal;}*/
+
+@font-face {
+  font-family: "Quinfo";
+  src: url(/static/fonts/QuinfoBOLD.otf) format("opentype");
+}
+
+.Quinfo {font-family: "Quinfo", verdana, helvetica, sans-serif;
+}
+
+
 .navbar-brand:hover,
 .navbar-brand:focus {
   text-decoration: none;
@@ -3974,11 +3990,12 @@ textarea.input-group-sm > .input-group-btn > .btn {
   }
 }
 .navbar-default {
-  background-color: #72dc2e;
-  border-color: #62c721;
+/*  background-color: #fe7e00;*/
+  background-color:#ff9933; 
+  border-color: #ff9933;
 }
 .navbar-default .navbar-brand {
-  color: #777777;
+  color: #ffffff;
 }
 .navbar-default .navbar-brand:hover,
 .navbar-default .navbar-brand:focus {
@@ -3986,7 +4003,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
   background-color: transparent;
 }
 .navbar-default .navbar-text {
-  color: #777777;
+  color: #F5F5F5;
 }
 .navbar-default .navbar-nav > li > a {
   color: #777777;

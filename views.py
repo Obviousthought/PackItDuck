@@ -147,6 +147,11 @@ def packing_list(trip_name):
     return render_template("packing_list.html", list_of_items=list_of_items, trip=trip,  activity=activity, trip_name=trip_name, start_date=trip.start_date, end_date=trip.end_date)  # trip_activity_list=trip_activity_list,
 
 
+@app.route("/settings")
+def settings():
+    return render_template("settings.html")
+
+
 @app.route("/logout")
 def logout():
     logout_user()
@@ -167,7 +172,7 @@ if __name__ == "__main__":
 
 
 
-
+#### Color scheme for background image---- PHOTOSHOP and DESATURATE to make the arrows not so link like!!!!
 
 
 

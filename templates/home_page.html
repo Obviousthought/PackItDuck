@@ -3,7 +3,23 @@
 
 {% block body %}
 
-<h2>Hello {{username}}!</h2>
+<div class="row">
+    <div class="col-lg-5">
+        <div class="media">
+            <a class="pull-left" href="/settings">
+                <img class="media-object dp img-circle" src="/static/images/user_icon.png" style="width: 100px;height:100px;">
+            </a>
+            <div class="media-body">
+                <h4 class="media-heading">{{current_user.username}} <small> {{current_user.email}}</small></h4>
+
+            </div>
+        </div>
+
+    </div>
+
+    
+
+</div>
 
 
 <h3>Your trips will display here:</h3>
@@ -19,3 +35,11 @@
 
 
 {% endblock %}
+
+<!-- under div class="media-body"                <h5>Software Developer at <a href="http://gridle.in">Gridle.in</a></h5>
+                <hr style="margin:8px auto"> -->
+<!-- 
+                <span class="label label-default">HTML5/CSS3</span>
+                <span class="label label-default">jQuery</span>
+                <span class="label label-info">CakePHP</span>
+                <span class="label label-default">Android</span> -->

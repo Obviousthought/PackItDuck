@@ -35,4 +35,23 @@
 	</ul>
 </div>
 
+
+<div class="container">
+	<div class="row">
+		<input type="hidden" name="count" value="1" />
+        <div class="control-group" id="fields">
+            <label class="control-label" for="field1">Add more items!</label>
+            <div class="controls" id="profs"> 
+                <div class="input-append">
+                    <input autocomplete="off" class="span3" id="field1" name="prof1" type="text" placeholder="Type in an item" data-provide="typeahead" data-items="8" data-source='["Aardvark","Beatlejuice","Capricorn","Deathmaul","Epic"]'/><button id="b1" class="btn btn-info add-more" type="button">+</button>
+                </div>
+            <br>
+            <small>Press + to add more items!</small>
+            </div>
+        </div>
+	</div>
+</div>
+
+
+
 {% endblock %}

@@ -11,7 +11,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session, relationship, backref, 
 from flask.ext.login import UserMixin
 
 import pdb
-# pdb.set_trace()  <--stops console running server at the point you insert this so you can interact with your code pythonically
+# pdb.set_trace()
 
 engine = create_engine(config.DB_URI, echo=True)
 session = scoped_session(sessionmaker(bind=engine, autocommit = False, autoflush = False))
@@ -40,10 +40,8 @@ class User(Base, UserMixin):
 
 	def is_active(self):
 		return True
-
 	def is_authenticated(self):
 		return True
-
 	def get_id(self):
 		return str(self.id)
 	def is_anonymous(self):
@@ -52,10 +50,11 @@ class User(Base, UserMixin):
 		return True
 
 
+
 class Trip(Base):
 	__tablename__="trips"
-	id = Column(Integer, primary_key=True)
-	user_id = Column(Integer, ForeignKey('users.id'))
+	id = Column(Integer, primary_key=True, )
+	user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
 	name = Column(String(64), nullable=False)
 	destination= Column(String(100), nullable=True) # <-- Change to False later
 	start_date = Column(DateTime, nullable=True) # Change to False later
@@ -63,7 +62,7 @@ class Trip(Base):
 	total_days = Column(Integer, nullable=True) # Change to False later
 
 	## Relationship
-	user = relationship("User", backref=backref("trips", order_by=id,lazy='dynamic'))
+	user = relationship("User", backref=backref("trips", order_by=id, lazy='dynamic'))
 
 class PackingList(Base):
 	__tablename__="packing_lists"
@@ -72,8 +71,8 @@ class PackingList(Base):
 	trip_id = Column(Integer, ForeignKey('trips.id'))
 
 	## Relationship
-	user = relationship("User", backref=backref("packing_lists", order_by=id))
-	trip = relationship("Trip", backref=backref("packing_lists", order_by=id))
+	user = relationship("User", backref=backref("packing_lists", order_by=id, lazy='dynamic'))
+	trip = relationship("Trip", backref=backref("packing_lists", order_by=id, lazy='dynamic'))
 
 
 class PackListItems(Base):
@@ -83,8 +82,8 @@ class PackListItems(Base):
 	item_id=Column(Integer, ForeignKey('items.id'))
 
 	## Relationship
-	packing_list = relationship("PackingList", backref=backref("packlist_items", order_by=id))
-	item = relationship("Item", backref=backref("packlist_items", order_by=id))
+	packing_list = relationship("PackingList", backref=backref("packlist_items", order_by=id, lazy='dynamic'))
+	item = relationship("Item", backref=backref("packlist_items", order_by=id, lazy='dynamic'))
 
 class Item(Base):
 	__tablename__="items"
@@ -98,8 +97,8 @@ class ActivityItem(Base):
 	activity_id = Column(Integer, ForeignKey('activities.id'))
 
 	## Relationship
-	item = relationship("Item", backref=backref("activity_items", order_by=id))
-	activity = relationship("Activity", backref=backref("activity_items", order_by=id))
+	item = relationship("Item", backref=backref("activity_items", order_by=id, lazy='dynamic'))
+	activity = relationship("Activity", backref=backref("activity_items", order_by=id, lazy='dynamic'))
 
 class Activity(Base):
 	__tablename__="activities"
@@ -113,8 +112,8 @@ class TripActivity(Base):
 	activity_id = Column(Integer, ForeignKey('activities.id'))
 
 	## Relationship
-	trip = relationship("Trip", backref=backref("trip_activities", order_by=id))
-	activity = relationship("Activity", backref=backref("trip_activities", order_by=id))
+	trip = relationship("Trip", backref=backref("trip_activities", order_by=id, lazy='dynamic'))
+	activity = relationship("Activity", backref=backref("trip_activities", order_by=id, lazy='dynamic'))
 
 ### End of class declarations  ###
 
