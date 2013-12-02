@@ -151,6 +151,19 @@ def create_trip_activity(trip_id, activity_id):
 	session.add(new_trip_activity)
 	session.commit()
 
+# Iterate through a trip's activity list and commit each activity for the trip
+def create_many_trip_activities(trip_id, activities_id_list):
+	if activities_id_list >= 1:
+		for activity_id in activities_id_list:
+			int_act_id = int(activity_id)
+			activity = session.query(Activity).filter_by(id=int_act_id).first()
+			new_trip_activity = TripActivity(trip_id=trip_id, activity_id=activity.id)
+			session.add(new_trip_activity)
+		session.commit()
+	else:
+		activity_id = activities_id_list[0]
+		create_trip_activity(trip_id=trip_id, activity_id=int(activity_id))
+
 
 #### End Database Configuration ####
 
@@ -292,6 +305,19 @@ def get_item_name_by_id(id):
 
 #####################
 
+## Trip Activity ##
+
+# Get activity attributes in a list out of a list of activity id's
+def get_activities_from_list(activities_id_list):
+	activity_list = []
+	for activity_id in activities_id_list:
+		int_act_id = int(activity_id)
+		activity = session.query(Activity).filter_by(id=int_act_id).first()
+		activity_list.append(activity)
+	return activity_list
+
+
+#####################
 
 # get trip name and packing list id by trip id
 def trip_name_packlist_id(trip_id):
@@ -301,15 +327,18 @@ def trip_name_packlist_id(trip_id):
 
 ######## "Pull Items" Functions #########
 
-# Get activity by trip_id
-def get_activity_by_trip(id):
-	trip_activity = session.query(TripActivity).filter_by(trip_id=id).first()
-	activity = session.query(Activity).filter_by(id=trip_activity.activity_id).first()
-	return activity
+# Get list of all activities by trip id
+def get_activities_by_trip(id):
+	activity_list = []
+	trip_activity_list = session.query(TripActivity).filter_by(trip_id=id).all()
+	for trip_activity in trip_activity_list:
+		activity = session.query(Activity).filter_by(id=trip_activity.activity_id).first()
+		activity_list.append(activity)
+	return activity_list
 
 # Get a list of item's by activity_id
 # def get_items_by_activity(id):
-# 	activity_ = session.query(Activity).filter_by()
+# 	activity = session.query(Activity).filter_by()
 
 
 ######### Dictionaries for possible later use #############

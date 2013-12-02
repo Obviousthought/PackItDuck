@@ -1,15 +1,23 @@
 {% extends "master.html" %}
 
 {% block body %}
-<div class="calendar">
+<div class="row clearfix">
+    <div class="col-md-12 column">
+        <div class="page-header">
+            <h1>
+                Create a New Trip <small>Subtext for header</small>
+            </h1>
+        </div>
+
 <form method="post" class="form-vertical" role="form">
     <div class="form-group">
         <label for="name" class="col-sm-3 control-label">Trip name</label>
-        <div class="col-sm-9">
+        <div class="col-sm-6">
             <input type="text" name="trip_name" class="form-control" placeholder="Give your trip a name">
         </div>
     </div>
 
+<!-- DESTINATION -->
 <!--   <div class="form-group">
         <label for="destination" class="col-sm-3 control-label">Where are you going?</label>
         <div class="col-sm-9">
@@ -18,6 +26,23 @@
     </div>  -->
 
     <div class="form-group">
+        <label for="daterange" class="col-sm-4 control-label">Date Range: </label>
+        <div class="col-sm-6">
+            <div class="input-daterange" id="datepicker">
+                <div class="col-sm-1">
+                    <input type="date" class="input-small" name="start_date" placeholder="Start"/>
+<!--                 </div>
+ -->                <span class="add-on"> to </span>
+<!--                 <div class="col-sm-6"> -->
+                    <input type="date" class="input-small" name="end_date" placeholder="End"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<!--START/END DATE first version-->
+<!--     <div class="form-group">
         <label for="start_date" class="col-sm-3 control-label">Starts: </label>
         <div class="col-sm-9">
             <input type="date" name="start_date" class="form-control"/>
@@ -28,10 +53,29 @@
         <div class="col-sm-9">
             <input type="date" name="end_date" class="form-control"/>
         </div>
-    </div>
+    </div> -->
     
 
+
     <div class="form-group">
+<!--         <div class="row">  -->
+        <label for="activities" class="col-sm-3">Activities: </label> 
+            <div class="col-sm-9">
+                <select type="int" class="form-control multiselect multiselect-icon" multiple="multiple" role="multiselect">
+                {%for activity in activities%}
+<!--                     <ul class="multiselect-container dropdown-menu"></ul> -->
+                        <li><option value="{{activity.id}}">{{activity.name}}</option></li>         
+<!--                     <option value="1" data-icon="glyphicon-link">Link</option>
+                    <option value="2" data-icon="glyphicon-pencil">Edit</option>
+                    <option value="3" data-icon="glyphicon-shopping-cart">Cart</option> -->
+<!--                     </ul> -->
+                {%endfor%}
+                </select> 
+            </div>        
+        </div>
+    </div>
+
+<!--     <div class="form-group">
         <label for="activities" class="col-sm-3 control-label">Activities: </label>
         <div class="col-sm-9">
             <select id="mySelect" name="activity">
@@ -42,9 +86,29 @@
                 <option value="4">Camping</option>
             </select>
         </div>
-    </div>
+    </div> -->
+
+    <!-- Select Multiple -->
+    
+<!--     <div class="control-group"> -->
+<!--     <div class="form-group"> -->
+<!--       <label class="col-sm-3 control-label" for="activities">Activities: </label>
+      <div class="controls">
+        <select id="selectmultiple" name="activity" class="input-xlarge" multiple="multiple">
+        {%for activity in activities%}
+            <ul>
+                <li><option value="{{activity.id}}">{{activity.name}}</option></li>
+            </ul>
+        {%endfor%}
+        </select>
+                
+      </div>
+    </div> -->
 
 
+
+
+<!-- multiple="multiple" -->
 
     <div class="form-group">
         <div class="col-sm-offset-5 col-sm-7">
@@ -53,5 +117,5 @@
     </div>
 
 </form>
-</div>
+
 {% endblock %}

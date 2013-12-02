@@ -1,18 +1,23 @@
 {% extends 'master.html' %}
 
 
-{% block body %}
+<!-- {% block body %}
 
 {% for message in get_flashed_messages() %}
       <p>{{ message }}</p>
-{% endfor %}
+{% endfor %} -->
 
 
-<h2>Trip: {{trip_name}}</h2>
-</br>
+<h2>{{trip_name}}</h2>
 
-{%if activity != None %}
-<h3>Activity: {{activity.name}}</h3>
+{% if activity_list >= 0 %}
+	<h4>Activities: </h4>
+	{% for activity in activity_list %}
+		<ul>
+			<li>{{activity.name}}</li>
+		</ul>
+	{% endfor %}
+
 {% endif %}
 
 </br>

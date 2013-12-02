@@ -106,45 +106,53 @@ def profile(username):
 @app.route("/new_trip")
 @login_required
 def new_trip():
-    return render_template("new_trip.html")
+    activities = model.session.query(Activity).all()
+    return render_template("new_trip.html", activities=activities)
 
 @app.route("/new_trip", methods=["POST"])
 @login_required
 def create_trip():
     user = current_user
     form = forms.NewTripForm(request.form)
+    # form.activities.choice = [(g.id, g.name) for g in model.session.query(Activity).order_by('name')]
     trip_name = request.form.get("trip_name")
 #    destination = request.form.get("destination")
     start_date= request.form.get("start_date")
     end_date= request.form.get("end_date")
-    activity_id = int(request.form.get("activity"))
-    # if not form.validate():
-    #     flash("Trip name field must be filled!")
-    #     return render_template("new_trip.html")
-## Create the Trip
+    # activities_id_list = form.activities.choice
+    activities_id_list = request.form.getlist('activities')
+    # activities_id_list_2 = form.activities.choices
+
+    # if form.validate_on_submit():
+
+    ## Create the Trip
     model.create_trip(user_id=user.id, name=trip_name, start_date=start_date, end_date=end_date) # add DESTINATION
     trip = model.get_trip_by_name(trip_name)
 
 ## Create the Trip Activity --- later account for multiple activities
-    activity = model.session.query(Activity).filter_by(id=activity_id).first()
-    model.create_trip_activity(trip_id=trip.id, activity_id=activity.id)
+    if len(activities_id_list) >= 0:
+        model.create_many_trip_activities(trip_id=trip.id, activities_id_list=activities_id_list)
+        # pdb.set_trace()
+        activity_list = model.get_activities_from_list(activities_id_list=activities_id_list)
 
 # Create the Packing List
     model.create_packinglist(user_id=trip.user_id, trip_id=trip.id)
     # packing_list = model.session.query(PackingList).filter_by(trip_id=trip.id).first()
 
-    return redirect(url_for("packing_list", trip_name=trip_name, trip=trip, activity=activity, start_date=start_date, end_date=end_date))
-
+    return redirect(url_for("packing_list", trip_name=trip_name, trip=trip, activity_list=activity_list, start_date=start_date, end_date=end_date))
+    # else:
+    #     flash("Field's must be filled!")
+    #     return render_template("new_trip.html")
 
 @app.route("/trip/<trip_name>")
 @login_required
 def packing_list(trip_name):
     trip = model.get_trip_by_name(trip_name)
     # trip_activity_list = model.session.query(TripActivity).filter_by(trip_id=trip.id).all()
-    activity = model.get_activity_by_trip(trip.id)
+    activity_list = model.get_activities_by_trip(trip.id)
     list_of_items = model.get_list_of_items()
 
-    return render_template("packing_list.html", list_of_items=list_of_items, trip=trip,  activity=activity, trip_name=trip_name, start_date=trip.start_date, end_date=trip.end_date)  # trip_activity_list=trip_activity_list,
+    return render_template("packing_list.html", list_of_items=list_of_items, trip=trip,  activity_list=activity_list, trip_name=trip_name, start_date=trip.start_date, end_date=trip.end_date)  # trip_activity_list=trip_activity_list,
 
 
 @app.route("/settings")
