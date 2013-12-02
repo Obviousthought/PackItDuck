@@ -1,14 +1,59 @@
 {% extends 'master.html' %}
 
+{%block body%}
 
-<!-- {% block body %}
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="panel panel-default">
+            	<div class="page-header">
+				<h1>
+					{{trip_name}}
+				</h1>
+			</div>
 
-{% for message in get_flashed_messages() %}
-      <p>{{ message }}</p>
-{% endfor %} -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Item
+                            </th>
+                            <th>
+                                Quantity
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for item in list_of_items%}
+                        <tr>
+                            <td>
+                                {{item}}
+                            </td>
+                            <td>
+<!--                                 {{item.quantity}} -->
+                            </td>
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
 
 
-<h2>{{trip_name}}</h2>
+
+
+
+
+
+
+
+
+
+<!-- <h2>{{trip_name}}</h2>
 
 {% if activity_list >= 0 %}
 	<h4>Activities: </h4>
@@ -38,10 +83,10 @@
 		{% endfor %}
 
 	</ul>
-</div>
+</div> -->
 
 
-<div class="container">
+<!-- <div class="container">
 	<div class="row">
 		<input type="hidden" name="count" value="1" />
         <div class="control-group" id="fields">
@@ -55,8 +100,9 @@
             </div>
         </div>
 	</div>
-</div>
+</div> -->
 
 
 
-{% endblock %}
+
+
