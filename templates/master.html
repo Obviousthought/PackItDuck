@@ -2,32 +2,41 @@
   <head>
       <meta charset="utf-8">
       <title>PackingZen</title>
+
+      <link href="/static/css/main.css" rel="stylesheet">       
+      <link rel="stylesheet" href="/static/css/bootstrap-multiselect.css" type="text/css"/>
       <link rel="stylesheet" href="/static/css/bootstrap.min.css">
       <link href="/static/css/bootstrap.css" rel="stylesheet">
-      <link href="/static/css/main.css" rel="stylesheet">
+
+      <script type="text/javascript" src="/static/js/jquery-2.0.3.min.js"></script>
+      <script type="text/javascript" src="/static/js/bootstrap-multiselect.js"></script>
+      <script type="text/javascript" src="/static/js/added_jquery.js"></script>
       <script type="text/javascript" src="/static/js/bootstrap.js"></script>
       <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-      <script type="text/javascript" src="/static/js/jquery-2.0.3.min.js"></script>
+
   </head>
 
   <body>
+
   {%if current_user.is_authenticated() %}
     <nav class="navbar navbar-default" role="navigation">
       <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+<!--         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+ --><!--     <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-collapse">
+
           <span class="sr-only"></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
-        </button>
+        </a> -->
         <a class="navbar-brand" href="/">PackingZen</a>
       </div>
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
           <li><a href="{{url_for('profile', username=current_user.username)}}">Home</a></li>
           <li><a href="/new_trip">New Trip</a></li>
-          <li><a href="/settings">Settings</a></li>
-          <li><a href="/logout">Logout</a></li>
+<!--           <li><a href="/settings">Settings</a></li>
+          <li><a href="/logout">Logout</a></li> -->
         </ul>
         <form class="navbar-form navbar-right" role="search">
           <div class="form-group">
@@ -38,7 +47,7 @@
 
         <ul class="nav navbar-nav navbar-right">
           <li class="dropdown">
-            <a href="/" class="dropdown-toggle" data-toggle="dropdown">{{current_user.username}} <b class="caret"></b></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{current_user.username}} <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li class>
                 <a href="/settings">Settings</a>
@@ -48,29 +57,12 @@
             </ul>
           </li>
         </ul>
-
-<!--         <div class="container">
-          <div class="row">     
-              <div class="col-md-12">
-                  <select type="text" class="form-control multiselect multiselect-icon" multiple="multiple" role="multiselect">          
-                    <option value="0" data-icon="glyphicon-camera">Photos</option>          
-                    <option value="1" data-icon="glyphicon-link">Link</option>
-                    <option value="2" data-icon="glyphicon-pencil">Edit</option>
-                    <option value="3" data-icon="glyphicon-shopping-cart">Cart</option>
-                  </select> 
-              </div>        
-          </div>
-        </div> -->
-
-
-
       </div><!-- /.navbar-collapse -->
     </nav>
 
   {%endif%}
 
     <div class="container">
-
           {% block body %}
           
           {% endblock %}

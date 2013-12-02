@@ -1,121 +1,357 @@
 {% extends "master.html" %}
 
 {% block body %}
-<div class="row clearfix">
-    <div class="col-md-12 column">
-        <div class="page-header">
-            <h1>
-                Create a New Trip <small>Subtext for header</small>
-            </h1>
-        </div>
 
-<form method="post" class="form-vertical" role="form">
-    <div class="form-group">
-        <label for="name" class="col-sm-3 control-label">Trip name</label>
-        <div class="col-sm-6">
-            <input type="text" name="trip_name" class="form-control" placeholder="Give your trip a name">
-        </div>
-    </div>
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="row clearfix">
+                <div class="col-md-2 column">
+                </div>
+                <div class="col-md-8 column">
+                    <div class="panel panel-default">
+                        <div class="panel panel-header">
+                            <h1>Plan Your Next Trip</h1>
+                        <div>
+                        <div class="panel-body">
+                            <div class="col-md-12 column">
+            <!--Trip Name Input-->
+                                <form class="form-horizontal" role="form">
+                                    <div class="form-group">
+                                         <label for="name" class="col-sm-3 control-label">Name your trip</label>
+                                        <div class="col-sm-6">
+                                            <input type="text" class="form-control" id="focusedInput" placeholder="ex. Honeymoon">
+                                        </div>
+                                        <div class="col-sm-3">
+                                        </div>
+                                    </div>
+                            <!--Destination Input-->
+                                    <div class="form-group">
+                                         <label for="destination" class="col-sm-3 control-label">Where are you going?</label>
+                                        <div class="col-sm-6">
+                                            <input type="text" class="form-control" id="focusedInput" placeholder="ex. Honolulu, Hawaii">
+                                        </div>
+                                        <div class="col-sm-3">
+                                        </div>
+                                    </div>
+                            <!--Start/End Date-->
+                                    <div class="form-group">
+                                        <label for="daterange" class="col-sm-3 control-label">When are you going?</label>
+                                        <div class="col-sm-7">
+                                            <input type="date" class="input-small" id="focusedInput" name="start_date" placeholder="Start"/>
+                                            <span class="add-on">  to  </span>
+                                            <input type="date" class="input-small" id="focusedInput" name="end_date" placeholder="End"/>
+                                        </div>
+                                        <div class="col-sm-2">
+                                        </div>
+                                    </div>
 
-<!-- DESTINATION -->
-<!--   <div class="form-group">
-        <label for="destination" class="col-sm-3 control-label">Where are you going?</label>
-        <div class="col-sm-9">
-            <input type="text" name="destination" class="form-control" placeholder="Destination">
-        </div>
-    </div>  -->
 
-    <div class="form-group">
-        <label for="daterange" class="col-sm-4 control-label">Date Range: </label>
-        <div class="col-sm-6">
-            <div class="input-daterange" id="datepicker">
-                <div class="col-sm-1">
-                    <input type="date" class="input-small" name="start_date" placeholder="Start"/>
-<!--                 </div>
- -->                <span class="add-on"> to </span>
-<!--                 <div class="col-sm-6"> -->
-                    <input type="date" class="input-small" name="end_date" placeholder="End"/>
+
+                                    <div class="form-group">
+                                        <label for="activities" class="col-sm-3 control-label">Activities?</label>
+                                        <div class="col-sm-6">
+                                            <select class="multiselect" id="test-build-filter-select" multiple="multiple" style="display: none">
+                                                <li>
+                                                    <option value="multiselect-all"> Select all</option>
+                                                </li>
+                                                {%for activity in activities%}
+                                                <li>
+                                                    <option value="{{activity.id}}">{{activity.name}}</option>
+                                                </li>
+                                                {%endfor%}
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3">
+                                        </div>
+                                    </div>
+
+                            <!-- Initialize the plugin: -->
+
+                                    <script type="text/javascript">
+                                        $(document).ready(function() {
+                                            
+                                            // Test build of multiselect.
+                                            var build = function(select, tr) {
+                                                select.multiselect();
+                                                
+                                                if (select.length === 0) {
+                                                    return 'Select not present anymore.';
+                                                }
+                                                
+                                                if (select.css('display') !== 'none') {
+                                                    return 'Select still visible (expected <code>display: none;</code>).';
+                                                }
+                                                
+                                                if ($('button.multiselect', tr).length === 0) {
+                                                    return 'Multiselect button not present.';
+                                                }
+                                                
+                                                if ($('option', select).length !== 5) {
+                                                    return 'Not all options present anymore.';
+                                                }
+                                                
+                                                if ($('ul.multiselect-container', tr).length === 0) {
+                                                    return 'Unordered list <code>.multiselect-container</code> not present.';
+                                                }
+                                                
+                                                if ($('ul.multiselect-container li', tr).length !== 5) {
+                                                    return 'No list item for each option present.';
+                                                }
+                                                
+                                                if ($('ul.multiselect-container li a', tr).length !== 5) {
+                                                    return 'Not all list items come with an anchor inside.';
+                                                }
+                                                
+                                                return false;
+                                            }($('#test-build-select'), $('#test-build-tr'));
+                                            
+                                            if (build) {
+                                                $('#test-build-tr').removeClass('success').addClass('danger');
+                                                $('#test-build-tr td').last().html(build);
+                                            }
+                                            
+                                            // Test build with optgroups.
+                                            var buildOptgroups = function(select, tr) {
+                                                select.multiselect();
+                                                
+                                                if ($('optgroup', select).length !== 2) {
+                                                    return 'Optgroups not present anymore (2 expected).';
+                                                }
+                                                
+                                                var first = $('optgroup', select).get(0);
+                                                var second = $('optgroup', select).get(1);
+                                                
+                                                if ($('option', $(first)).length !== 2) {
+                                                    return 'First optgroup does not have 2 options.';
+                                                }
+                                                
+                                                if ($('option', $(second)).length !== 3) {
+                                                    return 'Second optgroup does not have 3 options.';
+                                                }
+                                                
+                                                // Check the corresponding labels.
+                                                if ($('label.multiselect-group', tr).length !== 2) {
+                                                    return 'Expected 2 labels within the unordered list.';
+                                                }
+                                                
+                                                // Check labeling of groups.
+                                                var firstLabel = $('label.multiselect-group', tr).get(0);
+                                                var secondLabel = $('label.multiselect-group', tr).get(1);
+                                                
+                                                if ($(firstLabel).text() !== $(first).prop('label')) {
+                                                    return 'First group labeled incorrectly.';
+                                                }
+                                                
+                                                if ($(secondLabel).text() !== $(second).prop('label')) {
+                                                    return 'Second group labeled incorrectly.';
+                                                }
+                                                
+                                                return false;
+                                            }($('#test-build-optgroups-select'), $('#test-build-optgroups-tr'));
+                                            
+                                            if (buildOptgroups) {
+                                                $('#test-build-optgroups-tr').removeClass('success').addClass('danger');
+                                                $('#test-build-optgroups-tr td').last().html(build);
+                                            }
+                                            
+                                            var buildSelected = function(select, tr ) {
+                                                select.multiselect();
+                                                
+                                                if ($('option:selected', select).length !== 1) {
+                                                    return 'Multiselect did not adopt selected options (1 selected option).';
+                                                }
+                                                
+                                                if ($('ul.multiselect-container li.active', tr).length !== 1) {
+                                                    return 'Corresponding list item not set to <code>.active</code>.';
+                                                }
+                                                
+                                                return false;
+                                            }($('#test-build-selected-select'), $('#test-build-selected-tr'));
+                                            
+                                            if (buildSelected) {
+                                                $('#test-build-selected-tr').removeClass('success').addClass('danger');
+                                                $('#test-build-selected-tr td').last().html(buildSelected);
+                                            }
+                                            
+                                            var buildSelectAll = function(select, tr ) {
+                                                var value = 'multiselect-select-all';
+                                                select.multiselect({
+                                                    includeSelectAllOption: true,
+                                                    selectAllValue: value
+                                                });
+                                                
+                                                if ($('.multiselect-container input[value="' + value + '"]', tr).length !== 1) {
+                                                    return 'Expected exactly one input with value ' + value + ' as select all option.';
+                                                }
+                                                
+                                                return false;
+                                            }($('#test-build-select-all-select'), $('#test-build-select-all-tr'));
+                                            
+                                            if (buildSelectAll) {
+                                                $('#test-build-select-all-tr').removeClass('success').addClass('danger');
+                                                $('#test-build-select-all-tr td').last().html(buildSelectAll);
+                                            }
+                                            
+                                            var buildFilter = function(select, tr) {
+                                                select.multiselect({
+                                                    enableFiltering: true
+                                                });
+                                                
+                                                if ($('.multiselect-search', tr).length !== 1) {
+                                                    return 'No search input present.';
+                                                }
+                                                
+                                            }($('#test-build-filter-select'), $('#test-build-filter-tr'));
+                                            
+                                            if (buildFilter) {
+                                                $('#test-build-filter-tr').removeClass('success').addClass('danger');
+                                                $('#test-build-filter-tr td').last().html(buildFilter);
+                                            }
+                                            
+                                            // Test select.
+                                            var select = function(selectElement, tr) {
+                                                selectElement.multiselect();
+                                                
+                                                // Check for no selected options and no active li's.
+                                                if ($('option:selected', selectElement).length > 0) {
+                                                    return 'There are already selected options (0 expected).';
+                                                }
+                                                
+                                                if ($('ul.multiselect-container li.active', tr).length > 0) {
+                                                    return 'There are already active list items (0 expected).';
+                                                }
+                                                
+                                                selectElement.multiselect('select', '1');
+                                                
+                                                if ($('option:selected', selectElement).length !== 1) {
+                                                    return 'Just selected an option - option not marked selected.';
+                                                }
+                                                
+                                                if ($('ul.multiselect-container li.active', tr).length !== 1) {
+                                                    return 'Just selected an option - list item not set active.';
+                                                }
+                                                
+                                                if ($('option:selected', selectElement).first().val() !== '1') {
+                                                    return 'Wrong option selected.';
+                                                }
+                                                
+                                                selectElement.multiselect('select', ['2', '3']);
+                                                
+                                                if ($('option:selected', selectElement).length !== 3) {
+                                                    return 'Just selected two additional options - options not marked selected.';
+                                                }
+                                                
+                                                if ($('ul.multiselect-container li.active', tr).length !== 3) {
+                                                    return 'Just selected two additional options - list items not set active.';
+                                                }
+                                                
+                                                var second = $('option:selected', selectElement).get(1),
+                                                    third = $('option:selected', selectElement).get(2);
+                                                
+                                                if (second === undefined || second.length === 0) {
+                                                    return 'Could not get second option.';
+                                                }
+                                                
+                                                if (third === undefined || third.length === 0) {
+                                                    return 'Could not get third option.';
+                                                }
+                                                
+                                                if ($(second).val() !== '2' || $(third).val() !== '3') {
+                                                    return 'Wrong options selected.';
+                                                }
+                                                
+                                                return false;
+                                            }($('#test-select-select'), $('#test-select-tr'));
+                                            
+                                            if (select) {
+                                                $('#test-select-tr').removeClass('success').addClass('danger');
+                                                $('#test-select-tr td').last().html(select);
+                                            }
+                                            
+                                            // Test deselect.
+                                            var deselect = function(select, tr) {
+                                                select.multiselect();
+                                                
+                                                // Check for no selected options and no active li's.
+                                                if ($('option:selected', select).length !== 3) {
+                                                    return 'There should be 3 options selected.';
+                                                }
+                                                
+                                                if ($('ul.multiselect-container li.active', tr).length !== 3) {
+                                                    return 'There should be 3 list items set to active.';
+                                                }
+                                                
+                                                select.multiselect('deselect', '1');
+                                                
+                                                if ($('option:selected', select).length !== 2) {
+                                                    return 'Just deselected an option - option not marked deselected.';
+                                                }
+                                                
+                                                if ($('ul.multiselect-container li.active', tr).length !== 2) {
+                                                    return 'Just deselected an option - list item not set inactive.';
+                                                }
+                                                
+                                                if ($('option:selected', select).first().val() !== '2') {
+                                                    return 'Wrong option deselected.';
+                                                }
+                                                
+                                                select.multiselect('deselect', ['2', '3']);
+                                                
+                                                if ($('option:selected', select).length > 0) {
+                                                    return 'Just deselected two additional options - options not marked deselected.';
+                                                }
+                                                
+                                                if ($('ul.multiselect-container li.active', tr).length > 0) {
+                                                    return 'Just deselected two additional options - list items not set unactive.';
+                                                }
+                                                
+                                                return false;
+                                            }($('#test-deselect-select'), $('#test-deselect-tr'));
+                                            
+                                            if (deselect) {
+                                                $('#test-deselect-tr').removeClass('success').addClass('danger');
+                                                $('#test-deselect-tr td').last().html(deselect);
+                                            }
+                                            
+                                            var maxHeight = function(select, tr) {
+                                                
+                                                select.multiselect({
+                                                    maxHeight: 100
+                                                });
+                                                
+                                                var height = $('.multiselect-container', tr).css('max-height');
+                                                if (height !== '100px') {
+                                                    return 'Max height not set correctly (set: ' + height + ').';
+                                                }
+                                                
+                                                return false;
+                                            }($('#test-max-height-select'), $('#test-max-height-tr'));
+                                            
+                                            if (maxHeight) {
+                                                $('#test-max-height-tr').removeClass('success').addClass('danger');
+                                                $('#test-max-height-tr td').last().html(maxHeight);
+                                            }
+                                        });
+                                    </script>
+
+                            <!--Submit Button-->
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-3 col-sm-6">
+                                            <button type="submit" class="btn btn-success btn-lg btn-block">Submit</button>
+                                        </div>
+                                        <div class="col-sm-3">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 column">
                 </div>
             </div>
         </div>
     </div>
 
+{%endblock%}
 
-<!--START/END DATE first version-->
-<!--     <div class="form-group">
-        <label for="start_date" class="col-sm-3 control-label">Starts: </label>
-        <div class="col-sm-9">
-            <input type="date" name="start_date" class="form-control"/>
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="end_date" class="col-sm-3 control-label">Ends: </label>
-        <div class="col-sm-9">
-            <input type="date" name="end_date" class="form-control"/>
-        </div>
-    </div> -->
-    
-
-
-    <div class="form-group">
-<!--         <div class="row">  -->
-        <label for="activities" class="col-sm-3">Activities: </label> 
-            <div class="col-sm-9">
-                <select type="int" class="form-control multiselect multiselect-icon" multiple="multiple" role="multiselect">
-                {%for activity in activities%}
-<!--                     <ul class="multiselect-container dropdown-menu"></ul> -->
-                        <li><option value="{{activity.id}}">{{activity.name}}</option></li>         
-<!--                     <option value="1" data-icon="glyphicon-link">Link</option>
-                    <option value="2" data-icon="glyphicon-pencil">Edit</option>
-                    <option value="3" data-icon="glyphicon-shopping-cart">Cart</option> -->
-<!--                     </ul> -->
-                {%endfor%}
-                </select> 
-            </div>        
-        </div>
-    </div>
-
-<!--     <div class="form-group">
-        <label for="activities" class="col-sm-3 control-label">Activities: </label>
-        <div class="col-sm-9">
-            <select id="mySelect" name="activity">
-                <option> </option>
-                <option value="1">Surfing</option>
-                <option value="2">Swimming</option>
-                <option value="3">Scuba Diving</option>
-                <option value="4">Camping</option>
-            </select>
-        </div>
-    </div> -->
-
-    <!-- Select Multiple -->
-    
-<!--     <div class="control-group"> -->
-<!--     <div class="form-group"> -->
-<!--       <label class="col-sm-3 control-label" for="activities">Activities: </label>
-      <div class="controls">
-        <select id="selectmultiple" name="activity" class="input-xlarge" multiple="multiple">
-        {%for activity in activities%}
-            <ul>
-                <li><option value="{{activity.id}}">{{activity.name}}</option></li>
-            </ul>
-        {%endfor%}
-        </select>
-                
-      </div>
-    </div> -->
-
-
-
-
-<!-- multiple="multiple" -->
-
-    <div class="form-group">
-        <div class="col-sm-offset-5 col-sm-7">
-            <button type="submit" class="btn btn-default">Submit</button>
-        </div>
-    </div>
-
-</form>
-
-{% endblock %}

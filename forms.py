@@ -16,22 +16,76 @@ class RegisterForm(Form):
 
 # data = model.session.query(Activity).order_by(id=id).all()
 
-class NewTripForm(Form):
-    name = TextField("trip_name", [validators.Required()])
-    # destination = TextField("destination", [validators.Required()])
-    start_date = DateField("start_date")
-    	# , [validators.Required()])
-    end_date = DateField("end_date")
-    	# , [validators.Required()])
-    # activity = SelectField("activity")
 
+
+class NewTripForm(Form):
+	def create_activity_choices():
+		activity_list = model.session.query(Activity).order_by(id).all()
+		tuple_key_list = []
+		tuple_val_list = []
+		for activity in activity_list:
+			tuple_key_list.append(activity.name)
+			tuple_val_list.append(activity.id)
+		return tuple_key_list, tuple_val_list
+	def tuple_choices(tuple_key_list, tuple_val_list):
+		activity_choices= zip(tuple_key_list, tuple_val_list)
+		return activity_choices
+
+    	name = TextField("trip_name", [validators.Required()])
+    	destination = TextField("destination")
+    # , [validators.Required()])
+   	start_date = DateField("start_date")
+    	# , [validators.Required()])
+    	end_date = DateField("end_date")
+    	# , [validators.Required()])
+	
+    	activities = SelectMultipleField('activity', choices='activity_choices')
+
+
+
+
+
+
+# class MultiCheckboxField(SelectMultipleField):
+#     """
+#     A multiple-select, except displays a list of checkboxes.
+
+#     Iterating the field will produce subfields, allowing custom rendering of
+#     the enclosed checkbox fields.
+#     """
+#     widget = widgets.ListWidget(prefix_label=False)
+#     option_widget = widgets.CheckboxInput()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # activity = SelectField("activity")
     # activities = SelectMultipleField("activity", choices=model.session.query(Activity).order_by(id).get(id).all(), coerce=int)
     # activities = QuerySelectMultipleField("activity", coerce=int, query_factor=None, get_pk=None, get_label=None, allow_blank=True)
-
-
-    activities = SelectMultipleField('activity', coerce=int)
-
-
 
 
 
@@ -48,8 +102,6 @@ class NewTripForm(Form):
 #         html.append(u'<label %s>%s</label></li>')
 #     html.append(u'</ul>')
 #     return u''.join(html)
-
-
 
 
 # class SelectMultipleField(SelectField):

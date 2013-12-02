@@ -2,55 +2,136 @@
 
 {% block body %}
 
-<div class="row">
-      <div class="col-xs-12 col-sm-12 col-md-4 well well-sm" id="register_box">
-<!-- 	<div class="panel panel-default"> -->
-	      <legend><a href="/register"><i class="glyphicon glyphicon-globe"></i></a> Sign up!</legend>
-	      <form action="/register" method="POST" class="form" role="form">
-		      <input class="form-control" name="email" placeholder="Email" type="email" />
-		      <input class="form-control" name="username" placeholder="Pick a username!" type="text"/>
-		      <input class="form-control" name="password" placeholder="Password" type="password" />
-		      <input class="form-control" name="password_verify" placeholder="Verify Password" type="password" />
-<!-- 		      <label for="Birthdate">
-		          Birth Date</label>
-		      <div class="row">
-		          <div class="col-xs-4 col-md-4">
-		              <select class="form-control">
-		                  <option value="Month">Month</option>
-		              </select>
-		          </div>
-		          <div class="col-xs-4 col-md-4">
-		              <select class="form-control">
-		                  <option value="Day">Day</option>
-		              </select>
-		          </div>
-		          <div class="col-xs-4 col-md-4">
-		              <select class="form-control">
-		                  <option value="Year">Year</option>
-		              </select>
-		          </div>
-		      </div> -->
-		      <label class="radio-inline">
-		          <input type="radio" name="sex" id="inlineCheckbox1" value="male" />
-		          Male
-		      </label>
-		      <label class="radio-inline">
-		          <input type="radio" name="sex" id="inlineCheckbox2" value="female" />
-		          Female
-		      </label>
-		      <br />
-		    	{% for message in get_flashed_messages() %}
-		    		<p>{{ message }}</p>
-		    	{% endfor %}
-		      <br />
-		      <button class="btn btn-lg btn-primary btn-block" type="submit">
-		          Sign up</button>
-	      </form>
+<div class="row clearfix">
+	<div class="col-md-12 column">
+		<div class="page-header">
+<!-- 				<h1>
+				PackingZen <small>Subtext for header</small>
+			</h1> -->
+		</div>
+		<div class="row clearfix">
+			<div class="col-md-3 column">
+			</div>
+			<div class="col-md-6 column">
+				<div class="well">
+				      <legend><a href="/register"><i class="glyphicon glyphicon-globe"></i></a> Create an account!</legend>
+				      <form action="/register" method="POST" class="form" role="form">
+					      <input class="form-control" name="email" placeholder="Email" type="email" />
+					      <input class="form-control" name="username" placeholder="Pick a username!" type="text"/>
+					      <input class="form-control" name="password" placeholder="Password" type="password" />
+					      <input class="form-control" name="password_verify" placeholder="Verify Password" type="password" />
+
+					      <label for="Birthdate">
+					          Birth Date</label>
+					      <div class="row">
+					          <div class="col-xs-4 col-md-4">
+					              <select class="form-control">
+					                  <option value="Month">Month</option>
+					              </select>
+					          </div>
+					          <div class="col-xs-4 col-md-4">
+					              <select class="form-control">
+					                  <option value="Day">Day</option>
+					              </select>
+					          </div>
+					          <div class="col-xs-4 col-md-4">
+					              <select class="form-control">
+					                  <option value="Year">Year</option>
+					              </select>
+					          </div>
+					      </div>
+
+					      <label class="radio-inline">
+					          <input type="radio" name="sex" id="inlineCheckbox1" value="male" />
+					          Male
+					      </label>
+					      <label class="radio-inline">
+					          <input type="radio" name="sex" id="inlineCheckbox2" value="female" />
+					          Female
+					      </label>
+					      <br />
+					    	{% for message in get_flashed_messages() %}
+					    		<p>{{ message }}</p>
+					    	{% endfor %}
+					      <br />
+					      <button class="btn btn-lg btn-success btn-block" type="submit">
+					          Sign up</button>
+				      </form>
+				</div>
+			</div>
+			<div class="col-md-3 column">
+			</div>
+		</div>
 	</div>
 </div>
 
 
+
+
+<!-- <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-4 well well-sm" id="register_box">
+      <div class="col-md-12 column">
+      	<div class="col-md-3 column">
+      	</div>
+      	<div class="col-md-6 column">
+			<div class="panel panel-default">
+			      <legend><a href="/register"><i class="glyphicon glyphicon-globe"></i></a> Create an account!</legend>
+			      <form action="/register" method="POST" class="form" role="form">
+				      <input class="form-control" name="email" placeholder="Email" type="email" />
+				      <input class="form-control" name="username" placeholder="Pick a username!" type="text"/>
+				      <input class="form-control" name="password" placeholder="Password" type="password" />
+				      <input class="form-control" name="password_verify" placeholder="Verify Password" type="password" />
+
+				      <label for="Birthdate">
+				          Birth Date</label>
+				      <div class="row">
+				          <div class="col-xs-4 col-md-4">
+				              <select class="form-control">
+				                  <option value="Month">Month</option>
+				              </select>
+				          </div>
+				          <div class="col-xs-4 col-md-4">
+				              <select class="form-control">
+				                  <option value="Day">Day</option>
+				              </select>
+				          </div>
+				          <div class="col-xs-4 col-md-4">
+				              <select class="form-control">
+				                  <option value="Year">Year</option>
+				              </select>
+				          </div>
+				      </div>
+
+				      <label class="radio-inline">
+				          <input type="radio" name="sex" id="inlineCheckbox1" value="male" />
+				          Male
+				      </label>
+				      <label class="radio-inline">
+				          <input type="radio" name="sex" id="inlineCheckbox2" value="female" />
+				          Female
+				      </label>
+				      <br />
+				    	{% for message in get_flashed_messages() %}
+				    		<p>{{ message }}</p>
+				    	{% endfor %}
+				      <br />
+				      <button class="btn btn-lg btn-success btn-block" type="submit">
+				          Sign up</button>
+			      </form>
+			</div>
+		</div>
+		<div class="col-md-3 column">
+		</div>
+	</div>
+</div> -->
+
+
 {%endblock%}
+
+
+
+
+
 
 
 
@@ -63,28 +144,5 @@
 	              <input class="form-control" name="lastname" placeholder="Last Name" type="text" required />
 	          </div>
 	      </div> -->
-
-
-
-
-
-
-<!-- 
-  <div class="jumbotron">
-    <h1>Welcome to PackingZen!</h1>
-      <p>Prepare for your next trip using this packing list generator.</p>
-	<form class="registering" method="POST" action="/register">
-	    <h2 class="registering-heading">Register a new account</h2>	    
-	    <input type="text" class="form-control" placeholder="email" name="email">
-	    <input type="text" class="form-control" placeholder="username" name="username">
-	    <input type="password" class="form-control" placeholder="password" name="password">
-	    <input type="password" class="form-control" placeholder="verify password" name="password_verify">
-	    {% for message in get_flashed_messages() %}
-	    	<p>{{ message }}</p>
-	    {% endfor %}
-	    <input type="submit" class="btn btn-lg btn-primary btn-block" value="Submit">
-	</form>
-  </div>
--->
 
 

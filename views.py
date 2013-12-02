@@ -120,9 +120,10 @@ def create_trip():
     start_date= request.form.get("start_date")
     end_date= request.form.get("end_date")
     # activities_id_list = form.activities.choice
-    activities_id_list = request.form.getlist('activities')
-    # activities_id_list_2 = form.activities.choices
-
+    
+    # activities_id_list = request.form.getlist('activities')
+    activities_id_list = request.form.data
+    pdb.set_trace()
     # if form.validate_on_submit():
 
     ## Create the Trip

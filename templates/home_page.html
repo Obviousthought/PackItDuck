@@ -3,38 +3,113 @@
 
 {% block body %}
 
-<div class="row">
-    <div class="col-lg-5">
-        <div class="media">
-            <a class="pull-left" href="/settings">
-                <img class="media-object dp img-circle" src="/static/images/user_icon.png" style="width: 100px;height:100px;">
-            </a>
-            <div class="media-body">
-                <h4 class="media-heading">{{current_user.username}} <small> {{current_user.email}}</small></h4>
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="panel panel-default">
+                <div class="media">
+                    <a class="pull-left" href="/settings">
+                        <img class="media-object dp img-circle" src="/static/images/user_icon.png" style="width: 100px;height:100px;">
+                    </a>
+                    <div class="media-body">
+                        <h2 class="media-heading">{{current_user.username}} <small>{{current_user.email}}</small></h2>
 
+                    </div>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Trip
+                            </th>
+                            <th>
+                                Destination
+                            </th>
+                            <th>
+                                Start Date
+                            </th>
+                            <th>
+                                End Date
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for trip in trip_list%}
+                        <tr>
+                            <td>
+                                {{trip.name}}
+                            </td>
+                            <td>
+                                {{trip.destination}}
+                            </td>
+                            <td>
+                                {{trip.start_date}}
+                            </td>
+                            <td>
+                                {{trip.end_date}}
+                            </td>
+                        </tr>
+                        {%endfor%}
+
+                    </tbody>
+                </table>
             </div>
         </div>
-
     </div>
-
-    
-
 </div>
 
 
-<h3>Your trips will display here:</h3>
 
-<div>
-	<ul>
-	{% for trip in trip_list %}
-		<li><a href="{{url_for('packing_list', trip_name=trip.name)}}">{{trip.name}}</a>:   {{trip.start_date}}</li>
-	{% endfor %}
-	</ul>
-</div>
+<!-- <div class="row clearfix">
+    <div class="col-md-12 column">
+        <div class="row clearfix">
+            <div class="col-md-1 column"></div>
+            <div class="col-md-10 column">
+                <div class="panel panel-default">
 
+
+            <div class="col-lg-5">
+                <div class="media">
+                    <a class="pull-left" href="/settings">
+                        <img class="media-object dp img-circle" src="/static/images/user_icon.png" style="width: 100px;height:100px;">
+                    </a>
+                    <div class="media-body">
+                        <h2 class="media-heading">{{current_user.username}} <small>{{current_user.email}}</small></h2>
+
+                    </div>
+                </div>
+
+            </div>
+
+
+                <h3>Your trips will display here:</h3>
+
+                <div>
+                    <ul>
+                    {% for trip in trip_list %}
+                        <li><a href="{{url_for('packing_list', trip_name=trip.name)}}">{{trip.name}}</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+
+
+        </div>
+    </div>
+</div> -->
 
 
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
 
 <!-- under div class="media-body"                <h5>Software Developer at <a href="http://gridle.in">Gridle.in</a></h5>
                 <hr style="margin:8px auto"> -->
