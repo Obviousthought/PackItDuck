@@ -8,6 +8,8 @@ import config
 import forms
 import model
 import datetime
+import json
+import forecastio
 import pdb
 
 
@@ -106,44 +108,56 @@ def profile(username):
 @app.route("/new_trip")
 @login_required
 def new_trip():
-    activities = model.session.query(Activity).all()
-    return render_template("new_trip.html", activities=activities)
+    form = forms.NewTripForm(request.form)
+    form.activity.choices = [(act.id, act.name) for act in Activity.query.order_by('name')]
+    if not form.validate():
+        return render_template('new_trip.html', form=form)
+    else:
+        return redirect(url_for('create_trip'))
 
-@app.route("/new_trip", methods=["POST"])
+    # activities = model.session.query(Activity).all()
+    # return render_template("new_trip.html", activities=activities)
+
+@app.route("/new_trip", methods=["GET", "POST"])
 @login_required
 def create_trip():
     user = current_user
     form = forms.NewTripForm(request.form)
-    # form.activities.choice = [(g.id, g.name) for g in model.session.query(Activity).order_by('name')]
+    # trip_name=form.name.data
+    # destination=form.destination.data
+    # start_date=form.start_date.data
+    # end_date=form.end_date.data
+    # activity_id=form.activity.data
+
+
     trip_name = request.form.get("trip_name")
-#    destination = request.form.get("destination")
+    destination = request.form.get("destination")
     start_date= request.form.get("start_date")
     end_date= request.form.get("end_date")
-    # activities_id_list = form.activities.choice
-    
-    # activities_id_list = request.form.getlist('activities')
-    activities_id_list = request.form.data
-    pdb.set_trace()
-    # if form.validate_on_submit():
+    activity_id = request.form.get("activity")
 
-    ## Create the Trip
-    model.create_trip(user_id=user.id, name=trip_name, start_date=start_date, end_date=end_date) # add DESTINATION
+## Create the Trip
+    model.create_trip(user_id=user.id, destination=destination, name=trip_name, start_date=start_date, end_date=end_date)
     trip = model.get_trip_by_name(trip_name)
+    # model.session.refresh(trip)
 
-## Create the Trip Activity --- later account for multiple activities
-    if len(activities_id_list) >= 0:
-        model.create_many_trip_activities(trip_id=trip.id, activities_id_list=activities_id_list)
-        # pdb.set_trace()
-        activity_list = model.get_activities_from_list(activities_id_list=activities_id_list)
+## Create the Trip Activity --- later account for multiple activities        
+    activity = model.session.query(Activity).filter_by(id=activity_id).first()
+    trip_activity = model.create_trip_activity(trip_id=trip.id, activity_id=activity.id)
+    model.session.refresh(trip_activity)
 
 # Create the Packing List
-    model.create_packinglist(user_id=trip.user_id, trip_id=trip.id)
-    # packing_list = model.session.query(PackingList).filter_by(trip_id=trip.id).first()
+    packing_list = model.create_packinglist(user_id=trip.user_id, trip_id=trip.id)
+    model.session.refresh(packing_list)
 
-    return redirect(url_for("packing_list", trip_name=trip_name, trip=trip, activity_list=activity_list, start_date=start_date, end_date=end_date))
-    # else:
-    #     flash("Field's must be filled!")
-    #     return render_template("new_trip.html")
+    return redirect(url_for("packing_list", trip_name=trip.name, trip=trip, destination=trip.destination, activity=activity, start_date=trip.start_date, end_date=trip.end_date)) # activity_list=activity_list
+
+    # activities_id_list = form.activities.choice
+    # activities_id_list = request.form.getlist('activities')
+
+    # if len(activities_id_list) >= 0:
+    #     model.create_many_trip_activities(trip_id=trip.id, activities_id_list=activities_id_list)
+    #     activity_list = model.get_activities_from_list(activities_id_list=activities_id_list)
 
 @app.route("/trip/<trip_name>")
 @login_required
@@ -184,7 +198,31 @@ if __name__ == "__main__":
 #### Color scheme for background image---- PHOTOSHOP and DESATURATE to make the arrows not so link like!!!!
 
 
-
+# def forecast_for_day(day):
+#     now = datetime.datetime.now()
+#     day_since_epoch = calendar.timegm(day.utctimetuple()) / 60 / 60 / 24
+#     weather_cache = WeatherCache.query.get(day_since_epoch)
+#     if weather_cache == None:
+#         print "Loading from API", day_since_epoch
+#         forecast = forecastio.load_forecast(FORECAST_SECRET, lat, lng, units="auto", time=day)
+#         daily_weather = forecast.daily().data[0]
+#         cache = WeatherCache(id=day_since_epoch, weather=json.dumps(forecast.json["daily"]["data"][0]), update_time=now)
+#         db.session.add(cache)
+#         db.session.commit()
+#         return daily_weather
+#     else:
+#         if weather_cache.update_time + datetime.timedelta(days=1) < now and now <= day:
+#             print "Updating cache", day_since_epoch
+#             forecast = forecastio.load_forecast(FORECAST_SECRET, lat, lng, units="auto", time=day)
+#             daily_weather = forecast.daily().data[0]
+#             weather_cache.weather = json.dumps(forecast.json["daily"]["data"][0])
+#             weather_cache.update_time = now
+#             db.session.commit()
+#             return daily_weather
+#         else:
+#             print "Loading from cache", day_since_epoch
+#             parsed = json.loads(weather_cache.weather)
+#             return forecastio.models.ForecastioDataPoint(parsed)
 
 
 

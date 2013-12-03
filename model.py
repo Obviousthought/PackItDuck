@@ -126,13 +126,12 @@ def create_user(email, username, password):
 	session.add(new_user)
 	session.commit()
 
-def create_trip(user_id, name, start_date, end_date):
-	# add destination
+def create_trip(user_id, name, destination, start_date, end_date):
 	new_start = datetime.strptime(start_date, '%Y-%m-%d')
 	new_end = datetime.strptime(end_date, '%Y-%m-%d')
 	days_delta = new_end - new_start
 	total_days = days_delta.days + 1
-	new_trip = Trip(user_id=user_id,name=name,start_date=new_start, end_date=new_end, total_days=total_days)
+	new_trip = Trip(user_id=user_id,name=name,destination=destination, start_date=new_start, end_date=new_end, total_days=total_days)
 	session.add(new_trip)
 	session.commit()
 

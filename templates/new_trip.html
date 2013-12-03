@@ -10,12 +10,12 @@
                 <div class="col-md-8 column">
                     <div class="panel panel-default">
                         <div class="panel panel-header">
-                            <h1>Plan Your Next Trip</h1>
+                            <h1 style="text-align:center;">Plan Your Next Trip</h1>
                         <div>
                         <div class="panel-body">
                             <div class="col-md-12 column">
             <!--Trip Name Input-->
-                                <form class="form-horizontal" role="form">
+                                <form class="form-horizontal" method="POST" role="form" accept-charset="utf-8" action="{{url_for('create_trip')}}">
                                     <div class="form-group">
                                          <label for="name" class="col-sm-3 control-label">Name your trip</label>
                                         <div class="col-sm-6">
@@ -26,7 +26,7 @@
                                     </div>
                             <!--Destination Input-->
                                     <div class="form-group">
-                                         <label for="destination" class="col-sm-4 control-label">Choose your destination:</label>
+                                         <label for="destination" class="col-sm-3 control-label">Destination:</label>
 <!--                                         <div class="col-sm-6">
                                             <input type="text" class="form-control" id="focusedInput" placeholder="ex. Honolulu, Hawaii">
                                         </div>
@@ -117,7 +117,7 @@
 
                             <!--Activities-->
 
-                                    <div class="form-group">
+<!--                                     <div class="form-group">
                                         <label for="activities" class="col-sm-3 control-label">Activities?</label>
                                         <div class="col-sm-6">
                                             <select class="multiselect" id="test-build-filter-select" multiple="multiple" style="display: none">
@@ -133,7 +133,50 @@
                                         </div>
                                         <div class="col-sm-3">
                                         </div>
+                                    </div> -->
+
+<!--                                     <div class="form-group" id="cg-{{form.activity.id}}">
+                                        {{form.activity.label(class="col-sm-3 control-label", for=form.activity.id)}}
+                                        <div class="col-lg-9">
+                                            {{form.activity(class="form-control")}} <span class="help-block" id="hl-{{form.activity.id}}"></span>
+                                        </div>
+                                    </div> -->
+                                    
+                                    <div class="form-group">{{ form.csrf_token }}
+                                        <label for="title" class="col-sm-3 control-label">Activities?</label>
+                                        <div class="col-sm-6">
+                                            {{form.activity}}
+                                            {%if form.activity.errors %}
+                                            <ul class="errors">
+                                                {%for error in form.activity.errors%}
+                                                <li>{{error}}</li>
+                                                {%endfor%}
+                                            </ul>
+                                            {%endif%}
+                                        </div>
+                                        <div class="col-sm-3">
+                                        </div>
                                     </div>
+
+
+<!--                                     <div class="form-group">
+                                        <label for="activities" class="col-sm-3 control-label">Activities?</label>
+                                        <div class="col-sm-6">
+                                            <select id="mySelect" name="activity">
+                                                <ul>
+                                                    <li><option></option></li>
+                                                    {%for activity in activities%}
+                                                    <li>
+                                                        <option value="{{activity.id}}">{{activity.name}}</option>
+                                                    </li>
+                                                    {%endfor%}
+                                                </ul>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3">
+                                        </div>
+                                    </div> -->
+
 
                             <!-- Initialize the plugin: -->
 
