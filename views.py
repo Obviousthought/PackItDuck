@@ -130,7 +130,7 @@ def create_trip():
     # activity_id=form.activity.data
 
 
-    trip_name = request.form.get("trip_name")
+    trip_name = request.form.get("name")
     destination = request.form.get("destination")
     start_date= request.form.get("start_date")
     end_date= request.form.get("end_date")
@@ -139,16 +139,14 @@ def create_trip():
 ## Create the Trip
     model.create_trip(user_id=user.id, destination=destination, name=trip_name, start_date=start_date, end_date=end_date)
     trip = model.get_trip_by_name(trip_name)
-    # model.session.refresh(trip)
 
 ## Create the Trip Activity --- later account for multiple activities        
     activity = model.session.query(Activity).filter_by(id=activity_id).first()
     trip_activity = model.create_trip_activity(trip_id=trip.id, activity_id=activity.id)
-    model.session.refresh(trip_activity)
+
 
 # Create the Packing List
     packing_list = model.create_packinglist(user_id=trip.user_id, trip_id=trip.id)
-    model.session.refresh(packing_list)
 
     return redirect(url_for("packing_list", trip_name=trip.name, trip=trip, destination=trip.destination, activity=activity, start_date=trip.start_date, end_date=trip.end_date)) # activity_list=activity_list
 

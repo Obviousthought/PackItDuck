@@ -17,25 +17,30 @@
             <!--Trip Name Input-->
                                 <form class="form-horizontal" method="POST" role="form" accept-charset="utf-8" action="{{url_for('create_trip')}}">
                                     <div class="form-group">
-                                         <label for="name" class="col-sm-3 control-label">Name your trip</label>
+                                         <label for="trip_name" class="col-sm-3 control-label" style="text-align:center;">Name your trip:</label>
                                         <div class="col-sm-6">
-                                            <input type="text" class="form-control" id="focusedInput" placeholder="ex. Honeymoon">
+                                            <input type="text" name="name" class="form-control" id="focusedInput" placeholder="ex. Honeymoon">
                                         </div>
                                         <div class="col-sm-3">
                                         </div>
                                     </div>
+
                             <!--Destination Input-->
                                     <div class="form-group">
-                                         <label for="destination" class="col-sm-3 control-label">Destination:</label>
-<!--                                         <div class="col-sm-6">
-                                            <input type="text" class="form-control" id="focusedInput" placeholder="ex. Honolulu, Hawaii">
+                                         <label for="trip_destination" class="col-sm-3 control-label" style="text-align:center;">Destination:</label>
+                                        <div class="col-sm-6">
+                                            <input type="text" name="destination" class="form-control" id="focusedInput" placeholder="ex. Honolulu, Hawaii">
                                         </div>
                                         <div class="col-sm-3">
-                                        </div> -->
-                                    
+                                        </div>
+                                    </div>
 
-                                        <div id="container1" style="position: relative; width: 80%; max-height: 450px;"></div>
- 
+                            <!--Destination Map-->
+                                    <div class="form-group">
+                                        <label for="destination-map" class="control-label"></label>
+                                        <div class="col-sm-1"></div>
+                                        <div class="col-sm-10" id="container1" style="position: relative; width: 80%; max-height: 450px;"></div>
+                                        <div class="col-sm-1"></div>
                                     </div>
                                      <script>
                                        //basic map config with custom fills, mercator projection
@@ -105,7 +110,7 @@
 
                             <!--Start/End Date-->
                                     <div class="form-group">
-                                        <label for="daterange" class="col-sm-3 control-label">When are you going?</label>
+                                        <label for="daterange" class="col-sm-3 control-label" style="text-align:center;">When are you going?</label>
                                         <div class="col-sm-7">
                                             <input type="date" class="input-small" id="focusedInput" name="start_date" placeholder="Start"/>
                                             <span class="add-on">  to  </span>
@@ -114,36 +119,33 @@
                                         <div class="col-sm-2">
                                         </div>
                                     </div>
-
-                            <!--Activities-->
-
-<!--                                     <div class="form-group">
-                                        <label for="activities" class="col-sm-3 control-label">Activities?</label>
-                                        <div class="col-sm-6">
-                                            <select class="multiselect" id="test-build-filter-select" multiple="multiple" style="display: none">
-                                                <li>
-                                                    <option value="multiselect-all"> Select all</option>
-                                                </li>
-                                                {%for activity in activities%}
-                                                <li>
-                                                    <option value="{{activity.id}}">{{activity.name}}</option>
-                                                </li>
-                                                {%endfor%}
-                                            </select>
-                                        </div>
-                                        <div class="col-sm-3">
-                                        </div>
-                                    </div> -->
-
-<!--                                     <div class="form-group" id="cg-{{form.activity.id}}">
-                                        {{form.activity.label(class="col-sm-3 control-label", for=form.activity.id)}}
-                                        <div class="col-lg-9">
-                                            {{form.activity(class="form-control")}} <span class="help-block" id="hl-{{form.activity.id}}"></span>
-                                        </div>
-                                    </div> -->
                                     
-                                    <div class="form-group">{{ form.csrf_token }}
-                                        <label for="title" class="col-sm-3 control-label">Activities?</label>
+<!-- 
+                        http://tarruda.github.io/bootstrap-datetimepicker/
+                                    <div class="well">
+                                      <div id="datetimepicker4" class="input-append">
+                                        <input data-format="yyyy-MM-dd" type="text"></input>
+                                        <span class="add-on">
+                                          <i data-time-icon="icon-time" data-date-icon="icon-calendar">
+                                          </i>
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <script type="text/javascript">
+                                      $(function() {
+                                        $('#datetimepicker4').datetimepicker({
+                                          pickTime: false
+                                        });
+                                      });
+                                    </script>
+ -->
+
+
+               
+                            <!--Activities Dropdown List Select-->
+                                    <div class="form-group">
+                                        {{ form.csrf_token }}
+                                        <label for="title" class="col-sm-3 control-label" style="text-align:center;">Activities?</label>
                                         <div class="col-sm-6">
                                             {{form.activity}}
                                             {%if form.activity.errors %}
@@ -159,27 +161,7 @@
                                     </div>
 
 
-<!--                                     <div class="form-group">
-                                        <label for="activities" class="col-sm-3 control-label">Activities?</label>
-                                        <div class="col-sm-6">
-                                            <select id="mySelect" name="activity">
-                                                <ul>
-                                                    <li><option></option></li>
-                                                    {%for activity in activities%}
-                                                    <li>
-                                                        <option value="{{activity.id}}">{{activity.name}}</option>
-                                                    </li>
-                                                    {%endfor%}
-                                                </ul>
-                                            </select>
-                                        </div>
-                                        <div class="col-sm-3">
-                                        </div>
-                                    </div> -->
-
-
-                            <!-- Initialize the plugin: -->
-
+                            <!-- Initialize the interactive map plugin: -->
                                     <script type="text/javascript">
                                         $(document).ready(function() {
                                             
@@ -448,7 +430,7 @@
                                     </script>
 
                             <!--Submit Button-->
-                                    <div class="form-group">
+                                    <div class="form-actions">
                                         <div class="col-sm-offset-3 col-sm-6">
                                             <button type="submit" class="btn btn-success btn-lg btn-block">Submit</button>
                                         </div>
@@ -468,3 +450,55 @@
 
 {%endblock%}
 
+
+
+
+
+
+
+
+
+
+             <!--Activities-->
+
+<!--                                     <div class="form-group">
+                                        <label for="activities" class="col-sm-3 control-label">Activities?</label>
+                                        <div class="col-sm-6">
+                                            <select class="multiselect" id="test-build-filter-select" multiple="multiple" style="display: none">
+                                                <li>
+                                                    <option value="multiselect-all"> Select all</option>
+                                                </li>
+                                                {%for activity in activities%}
+                                                <li>
+                                                    <option value="{{activity.id}}">{{activity.name}}</option>
+                                                </li>
+                                                {%endfor%}
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3">
+                                        </div>
+                                    </div> -->
+
+<!--                                     <div class="form-group" id="cg-{{form.activity.id}}">
+                                        {{form.activity.label(class="col-sm-3 control-label", for=form.activity.id)}}
+                                        <div class="col-lg-9">
+                                            {{form.activity(class="form-control")}} <span class="help-block" id="hl-{{form.activity.id}}"></span>
+                                        </div>
+                                    </div> -->
+<!--                                     <div class="form-group">
+                                        <label for="activities" class="col-sm-3 control-label">Activities?</label>
+                                        <div class="col-sm-6">
+                                            <select id="mySelect" name="activity">
+                                                <ul>
+                                                    <li><option></option></li>
+                                                    {%for activity in activities%}
+                                                    <li>
+                                                        <option value="{{activity.id}}">{{activity.name}}</option>
+                                                    </li>
+                                                    {%endfor%}
+                                                </ul>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3">
+                                        </div>
+                                    </div> -->
