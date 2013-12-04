@@ -123,12 +123,6 @@ def new_trip():
 def create_trip():
     user = current_user
     form = forms.NewTripForm(request.form)
-    # trip_name=form.name.data
-    # destination=form.destination.data
-    # start_date=form.start_date.data
-    # end_date=form.end_date.data
-    # activity_id=form.activity.data
-
 
     trip_name = request.form.get("name")
     destination = request.form.get("destination")
@@ -142,26 +136,41 @@ def create_trip():
 
 ## Create the Trip Activity --- later account for multiple activities        
     activity = model.session.query(Activity).filter_by(id=activity_id).first()
-    trip_activity = model.create_trip_activity(trip_id=trip.id, activity_id=activity.id)
-
+    model.create_trip_activity(trip_id=trip.id, activity_id=activity.id)
 
 # Create the Packing List
-    packing_list = model.create_packinglist(user_id=trip.user_id, trip_id=trip.id)
+    model.create_packinglist(user_id=trip.user_id, trip_id=trip.id)
+    packing_list = model.get_packlist_by_trip(trip.id)
 
-    return redirect(url_for("packing_list", trip_name=trip.name, trip=trip, destination=trip.destination, activity=activity, start_date=trip.start_date, end_date=trip.end_date)) # activity_list=activity_list
+# Filter/Create PackListItems:
+    packlist_items = []
 
-    # activities_id_list = form.activities.choice
-    # activities_id_list = request.form.getlist('activities')
+    db_item_list = model.session.query(Item).all()
+    if packlist_items = []:
+    for item in db_item_list:
+        if item.min_qty != None:
+            packlist_items.append(item.item_id)
+    return
 
-    # if len(activities_id_list) >= 0:
-    #     model.create_many_trip_activities(trip_id=trip.id, activities_id_list=activities_id_list)
-    #     activity_list = model.get_activities_from_list(activities_id_list=activities_id_list)
+    if activity.id != 12:
+        activity_items = model.session.query(ActivityItem).filter_by(activity_id=activity.id).all()
+        for act_item in activity_items:
+            if activity.id == act_item.activity_id:
+                packlist_items.append(act_item.item_id)
+        return packlist_items
+
+
+# on model.py change create_packlist_item to take in a list of items and the packing_list_id
+    model.create_packlist_item(packing_list_id=packing_list.id)
+
+
+    return redirect(url_for("packing_list", trip_name=trip.name, trip=trip, packing_list=packing_list, destination=trip.destination, activity=activity, start_date=trip.start_date, end_date=trip.end_date)) # activity_list=activity_list
+
 
 @app.route("/trip/<trip_name>")
 @login_required
 def packing_list(trip_name):
     trip = model.get_trip_by_name(trip_name)
-    # trip_activity_list = model.session.query(TripActivity).filter_by(trip_id=trip.id).all()
     activity_list = model.get_activities_by_trip(trip.id)
     list_of_items = model.get_list_of_items()
 

@@ -5,16 +5,16 @@ import csv
 
 def load_items(session):
     with open("seed_data/u.items") as csvfile:
-        items = csv.reader(csvfile,delimiter="|")
+        items = csv.reader(csvfile,delimiter=",")
         for item in items:
-                new_item = model.Item(name=item[0])
+                new_item = model.Item(name=item[0],min_qty=item[1],max_qty=item[2],time_type=item[3])
                 session.add(new_item)
     return session
 
 
 def load_activities(session):
     with open("seed_data/u.activities") as csvfile:
-        activities = csv.reader(csvfile,delimiter="|")
+        activities = csv.reader(csvfile,delimiter=",")
         for activity in activities:
                 new_activity = model.Activity(name=activity[0])
                 session.add(new_activity)

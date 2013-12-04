@@ -4,7 +4,7 @@ from datetime import datetime, date, timedelta
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, ForeignKey
-from sqlalchemy import Column, Integer, String, DateTime, Text, Index
+from sqlalchemy import Column, Integer, String, DateTime, Text, Index, Date
 
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship, backref, joinedload
 
@@ -56,10 +56,12 @@ class Trip(Base):
 	id = Column(Integer, primary_key=True, )
 	user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
 	name = Column(String(64), nullable=False)
-	destination= Column(String(100), nullable=True) # <-- Change to False later
-	start_date = Column(DateTime, nullable=True) # Change to False later
-	end_date = Column(DateTime, nullable=True) # Change to False later
-	total_days = Column(Integer, nullable=True) # Change to False later
+	destination= Column(String(100), nullable=False)
+	start_date = Column(DateTime, nullable=True) # Change to False later?
+	end_date = Column(DateTime, nullable=True) # Change to False later?
+	# start_date = Column(Date, nullable=True)
+	# end_date = Column(Date, nullable=True)
+	total_days = Column(Integer, nullable=True) # Change to False later?
 
 	## Relationship
 	user = relationship("User", backref=backref("trips", order_by=id, lazy='dynamic'))
@@ -67,8 +69,8 @@ class Trip(Base):
 class PackingList(Base):
 	__tablename__="packing_lists"
 	id = Column(Integer, primary_key=True)
-	user_id = Column(Integer, ForeignKey('users.id'))
-	trip_id = Column(Integer, ForeignKey('trips.id'))
+	user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+	trip_id = Column(Integer, ForeignKey('trips.id'), nullable=False)
 
 	## Relationship
 	user = relationship("User", backref=backref("packing_lists", order_by=id, lazy='dynamic'))
@@ -78,8 +80,9 @@ class PackingList(Base):
 class PackListItems(Base):
 	__tablename__="packlist_items"
 	id = Column(Integer, primary_key=True)
-	packing_list_id=Column(Integer, ForeignKey('packing_lists.id'))
-	item_id=Column(Integer, ForeignKey('items.id'))
+	packing_list_id=Column(Integer, ForeignKey('packing_lists.id'), nullable=False)
+	item_id=Column(Integer, ForeignKey('items.id'), nullable=False)
+	item_qty=Column(Integer, nullable=False)
 
 	## Relationship
 	packing_list = relationship("PackingList", backref=backref("packlist_items", order_by=id, lazy='dynamic'))
@@ -89,12 +92,16 @@ class Item(Base):
 	__tablename__="items"
 	id = Column(Integer, primary_key=True)
 	name = Column(String(64), nullable=False)
+	min_qty = Column(Integer, nullable=True)  # or false
+	max_qty = Column(Integer, nullable=True)  # or false
+	# time_type is # of days an item, quantity of 1, is necessary
+	time_type = Column(Integer, nullable=True) # or false
 
 class ActivityItem(Base):
 	__tablename__="activity_items"
 	id = Column(Integer, primary_key=True)
-	item_id = Column(Integer, ForeignKey('items.id'))
-	activity_id = Column(Integer, ForeignKey('activities.id'))
+	item_id = Column(Integer, ForeignKey('items.id'), nullable=False)
+	activity_id = Column(Integer, ForeignKey('activities.id'), nullable=False)
 
 	## Relationship
 	item = relationship("Item", backref=backref("activity_items", order_by=id, lazy='dynamic'))
@@ -108,8 +115,8 @@ class Activity(Base):
 class TripActivity(Base):
 	__tablename__="trip_activities"
 	id = Column(Integer, primary_key=True)
-	trip_id = Column(Integer, ForeignKey('trips.id'))
-	activity_id = Column(Integer, ForeignKey('activities.id'))
+	trip_id = Column(Integer, ForeignKey('trips.id'), nullable=False)
+	activity_id = Column(Integer, ForeignKey('activities.id'), nullable=False)
 
 	## Relationship
 	trip = relationship("Trip", backref=backref("trip_activities", order_by=id, lazy='dynamic'))
@@ -127,11 +134,12 @@ def create_user(email, username, password):
 	session.commit()
 
 def create_trip(user_id, name, destination, start_date, end_date):
-	new_start = datetime.strptime(start_date, '%Y-%m-%d')
-	new_end = datetime.strptime(end_date, '%Y-%m-%d')
-	days_delta = new_end - new_start
-	total_days = days_delta.days + 1
-	new_trip = Trip(user_id=user_id,name=name,destination=destination, start_date=new_start, end_date=new_end, total_days=total_days)
+	if start_date != None and end_date != None:
+		start_date = datetime.strptime(start_date, '%Y-%m-%d')
+		end_date = datetime.strptime(end_date, '%Y-%m-%d')
+		days_delta = end_date - start_date
+		total_days = days_delta.days + 1
+	new_trip = Trip(user_id=user_id,name=name,destination=destination, start_date=start_date, end_date=end_date, total_days=total_days)
 	session.add(new_trip)
 	session.commit()
 
@@ -258,7 +266,10 @@ def get_user_packlist(id):
 		user_trips.append(packlist.id)
 	return user_trips
 
-
+# Get a packing list by the trip id
+def get_packlist_by_trip(trip_id):
+	packlist = PackingList.query.filter_by(trip_id=trip_id).first()
+	return packlist
 
 
 # Get a list of item names for a packing list by packing_list_id
