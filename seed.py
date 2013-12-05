@@ -7,8 +7,14 @@ def load_items(session):
     with open("seed_data/u.items") as csvfile:
         items = csv.reader(csvfile,delimiter=",")
         for item in items:
-                new_item = model.Item(name=item[0],min_qty=item[1],max_qty=item[2],time_type=item[3])
-                session.add(new_item)
+            if item[1] == '':
+                item[1] = None
+            if item[2] == '':
+                item[2] = None
+            if item[3] == '':
+                item[3] = None
+            new_item = model.Item(name=item[0],min_qty=item[1],max_qty=item[2],time_type=item[3])
+            session.add(new_item)
     return session
 
 

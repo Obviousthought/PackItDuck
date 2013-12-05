@@ -37,7 +37,7 @@
                         {%for trip in trip_list%}
                         <tr>
                             <td>
-                                <a href="{{url_for('packing_list', trip_name=trip.name)}}">{{trip.name}}</a>
+                                <a href="{{url_for('packing_list', trip_name=trip.name, packlist_items=packlist_items)}}">{{trip.name}}</a>
                             </td>
                             <td>
                                 {{trip.destination}}

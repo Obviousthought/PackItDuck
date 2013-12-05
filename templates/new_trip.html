@@ -2,8 +2,8 @@
 
 {% block body %}
 
-    <div class="row clearfix">
-        <div class="col-md-12 column">
+<!--     <div class="row clearfix">
+        <div class="col-md-12 column"> -->
             <div class="row clearfix">
                 <div class="col-md-2 column">
                 </div>
@@ -95,16 +95,17 @@
                                        
                                       
                                        //bubbles, custom popup on hover template
-                                     map.bubbles([
-                                       {name: 'Hot', latitude: 21.32, longitude: 5.32, radius: 10, fillKey: 'gt50'},
-                                       {name: 'Chilly', latitude: -25.32, longitude: 120.32, radius: 18, fillKey: 'lt50'},
-                                       {name: 'Hot again', latitude: 21.32, longitude: -84.32, radius: 8, fillKey: 'gt50'},
+                                     // map.bubbles([
+                                     //   {name: 'Hot', latitude: 21.32, longitude: 5.32, radius: 10, fillKey: 'gt50'},
+                                     //   {name: 'Chilly', latitude: -25.32, longitude: 120.32, radius: 18, fillKey: 'lt50'},
+                                     //   {name: 'Hot again', latitude: 21.32, longitude: -84.32, radius: 8, fillKey: 'gt50'},
 
-                                     ], {
-                                       popupTemplate: function(geo, data) {
-                                         return "<div class='hoverinfo'>It is " + data.name + "</div>";
-                                       }
-                                     });
+                                     // ], {
+                                     //   popupTemplate: function(geo, data) {
+                                     //     return "<div class='hoverinfo'>It is " + data.name + "</div>";
+                                     //   }
+                                     // })
+                                     ;
                                      </script>
 
 
@@ -120,25 +121,7 @@
                                         </div>
                                     </div>
 
-<!-- 
-                        http://tarruda.github.io/bootstrap-datetimepicker/
-                                    <div class="well">
-                                      <div id="datetimepicker4" class="input-append">
-                                        <input data-format="yyyy-MM-dd" type="text"></input>
-                                        <span class="add-on">
-                                          <i data-time-icon="icon-time" data-date-icon="icon-calendar">
-                                          </i>
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <script type="text/javascript">
-                                      $(function() {
-                                        $('#datetimepicker4').datetimepicker({
-                                          pickTime: false
-                                        });
-                                      });
-                                    </script>
- -->
+
 
                             <!--Activities Dropdown List Select-->
                                     <div class="form-group">
@@ -162,7 +145,54 @@
                             <!-- Initialize the interactive map plugin: -->
                                     <script type="text/javascript">
                                         $(document).ready(function() {
-                                            
+                                    </script>
+
+                            <!--Submit Button-->
+                                    <div class="form-actions">
+                                        <div class="col-sm-offset-3 col-sm-6">
+                                            <button type="submit" class="btn btn-success btn-lg btn-block">Submit</button>
+                                        </div>
+                                        <div class="col-sm-3">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 column">
+                </div>
+            </div>
+<!--         </div>
+    </div> -->
+
+{%endblock%}
+
+
+
+<!-- 
+                        http://tarruda.github.io/bootstrap-datetimepicker/
+                                    <div class="well">
+                                      <div id="datetimepicker4" class="input-append">
+                                        <input data-format="yyyy-MM-dd" type="text"></input>
+                                        <span class="add-on">
+                                          <i data-time-icon="icon-time" data-date-icon="icon-calendar">
+                                          </i>
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <script type="text/javascript">
+                                      $(function() {
+                                        $('#datetimepicker4').datetimepicker({
+                                          pickTime: false
+                                        });
+                                      });
+                                    </script>
+ -->
+
+
+<!--   <script> for multiselect
+
                                             // Test build of multiselect.
                                             var build = function(select, tr) {
                                                 select.multiselect();
@@ -425,33 +455,8 @@
                                                 $('#test-max-height-tr td').last().html(maxHeight);
                                             }
                                         });
-                                    </script>
 
-                            <!--Submit Button-->
-                                    <div class="form-actions">
-                                        <div class="col-sm-offset-3 col-sm-6">
-                                            <button type="submit" class="btn btn-success btn-lg btn-block">Submit</button>
-                                        </div>
-                                        <div class="col-sm-3">
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2 column">
-                </div>
-            </div>
-        </div>
-    </div>
-
-{%endblock%}
-
-
-
-
-
+-->
 
 
 

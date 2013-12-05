@@ -21,7 +21,7 @@ line-height: 1.428571429;
 color: #999;
 }
 
-.panel-default { opacity: 0.9; margin-top:75px;}
+.panel-default { opacity: 0.9; margin-top:15px;}
 .form-group.last { margin-bottom:0px; }
 
 .error-template {padding: 40px 15px;text-align: center;}
@@ -73,8 +73,6 @@ color: #999;
 	height: 100px;
 }*/
 
-
-
 #custom-search-form {
     margin:0;
     margin-top: 5px;
@@ -113,14 +111,6 @@ color: #999;
     z-index: 3;   
 }
 
-
-
-
-
-
-
-
-
 .multiselect-container{position:absolute;list-style-type:none;margin:0;padding:0}.multiselect-container .input-group{margin:5px}.multiselect-container>li{padding:0}.multiselect-container>li>a.multiselect-all label{font-weight:bold}.multiselect-container>li>label.multiselect-group{margin:0;padding:3px 20px 3px 10px;height:100%;font-weight:bold;}.multiselect-container>li>a>label{margin:0;height:100%;cursor:pointer;font-weight:normal}.multiselect-container>li>a>label.radio,.multiselect-container>li>a>label.checkbox{margin:0}.multiselect-container>li>a>label>input[type="checkbox"]{margin-bottom:5px}.btn-group>.btn-group:nth-child(2)>.multiselect.btn{border-top-left-radius:4px;border-bottom-left-radius:4px}
 
 .row {margin-bottom: 20px;}
@@ -131,8 +121,6 @@ color: #999;
     line-height: 1.33;
     border-radius: 6px;
 }
-
-
 
 .navbar-brand {
   float: left;
@@ -149,8 +137,6 @@ color: #999;
 
 .Quinfo {font-family: "Quinfo", verdana, helvetica, sans-serif;
 }
-
-
 
 .dropdown-menu > li > a:hover,
 .dropdown-menu > li > a:focus {

@@ -3,7 +3,7 @@ import bcrypt
 from datetime import datetime, date, timedelta
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine, ForeignKey
+from sqlalchemy import create_engine, ForeignKey, update, insert, delete
 from sqlalchemy import Column, Integer, String, DateTime, Text, Index, Date
 
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship, backref, joinedload
@@ -69,8 +69,8 @@ class Trip(Base):
 class PackingList(Base):
 	__tablename__="packing_lists"
 	id = Column(Integer, primary_key=True)
-	user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-	trip_id = Column(Integer, ForeignKey('trips.id'), nullable=False)
+	user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
+	trip_id = Column(Integer, ForeignKey('trips.id'), nullable=True)
 
 	## Relationship
 	user = relationship("User", backref=backref("packing_lists", order_by=id, lazy='dynamic'))
@@ -80,9 +80,9 @@ class PackingList(Base):
 class PackListItems(Base):
 	__tablename__="packlist_items"
 	id = Column(Integer, primary_key=True)
-	packing_list_id=Column(Integer, ForeignKey('packing_lists.id'), nullable=False)
-	item_id=Column(Integer, ForeignKey('items.id'), nullable=False)
-	item_qty=Column(Integer, nullable=False)
+	packing_list_id=Column(Integer, ForeignKey('packing_lists.id'), nullable=True)
+	item_id=Column(Integer, ForeignKey('items.id'), nullable=True)
+	item_qty=Column(Integer, nullable=True)
 
 	## Relationship
 	packing_list = relationship("PackingList", backref=backref("packlist_items", order_by=id, lazy='dynamic'))
@@ -91,7 +91,7 @@ class PackListItems(Base):
 class Item(Base):
 	__tablename__="items"
 	id = Column(Integer, primary_key=True)
-	name = Column(String(64), nullable=False)
+	name = Column(String(64), nullable=True)
 	min_qty = Column(Integer, nullable=True)  # or false
 	max_qty = Column(Integer, nullable=True)  # or false
 	# time_type is # of days an item, quantity of 1, is necessary
@@ -100,8 +100,8 @@ class Item(Base):
 class ActivityItem(Base):
 	__tablename__="activity_items"
 	id = Column(Integer, primary_key=True)
-	item_id = Column(Integer, ForeignKey('items.id'), nullable=False)
-	activity_id = Column(Integer, ForeignKey('activities.id'), nullable=False)
+	item_id = Column(Integer, ForeignKey('items.id'), nullable=True)
+	activity_id = Column(Integer, ForeignKey('activities.id'), nullable=True)
 
 	## Relationship
 	item = relationship("Item", backref=backref("activity_items", order_by=id, lazy='dynamic'))
@@ -110,13 +110,13 @@ class ActivityItem(Base):
 class Activity(Base):
 	__tablename__="activities"
 	id = Column(Integer, primary_key=True)
-	name = Column(String(100), nullable=False)
+	name = Column(String(100), nullable=True)
 
 class TripActivity(Base):
 	__tablename__="trip_activities"
 	id = Column(Integer, primary_key=True)
-	trip_id = Column(Integer, ForeignKey('trips.id'), nullable=False)
-	activity_id = Column(Integer, ForeignKey('activities.id'), nullable=False)
+	trip_id = Column(Integer, ForeignKey('trips.id'), nullable=True)
+	activity_id = Column(Integer, ForeignKey('activities.id'), nullable=True)
 
 	## Relationship
 	trip = relationship("Trip", backref=backref("trip_activities", order_by=id, lazy='dynamic'))
@@ -148,10 +148,17 @@ def create_packinglist(user_id, trip_id):
 	session.add(new_packinglist)
 	session.commit()
 
-def create_packlist_item(packing_list_id, item_id):
-	new_packlist_items = PackListItems(packing_list_id=packing_list_id, item_id=item_id)
-	session.add(new_packlist_items)
-	session.commit()
+def create_packlist_item(packing_list_id, packlist_items):
+	for item in packlist_items:
+		new_packlist_items = PackListItems(packing_list_id=packing_list_id, item_id=item)
+		session.add(new_packlist_items)
+	return session.commit()
+
+def update_item_qty(packing_list_id, item_id, item_qty):
+	new_item_qty = PackListItems.update().where(packing_list_id=packing_list_id, item_id=item_id).values(item_qty=item_qty)
+	session.add(new_item_qty)
+	return session.commit()
+
 
 def create_trip_activity(trip_id, activity_id):
 	new_trip_activity = TripActivity(trip_id=trip_id, activity_id=activity_id)

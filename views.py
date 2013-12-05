@@ -98,11 +98,24 @@ def create_user():
 def profile(username):
     user = current_user
     # user_id = current_user.id
-    packlist_id = model.get_user_packlist(user.id)
+    # packlist_id = model.get_user_packlist(user.id)
     # trip_names = model.get_user_trip_names(user.id)
     trip_list = model.get_user_trips(user.id)
 
-    return render_template("home_page.html", user_id=user.id, username=user.username, packlist_id=packlist_id, trip_list=trip_list)
+    packlist_items = []
+    for trip in trip_list:
+        packing_list = model.session.query(PackingList).filter_by(trip_id=trip.id).first()
+        # packing_list_id = model.session.query(PackingList).filter_by(trip_id=trip.id).get(id)
+        packlist_item = model.session.query(PackListItems).filter_by(packing_list_id=packing_list.id).first()
+        packlist_items.append(packlist_item.id)
+
+    # attr_packlist_items = []
+    # for item in packlist_items:
+    #     item_name = model.session.query(Item).filter_by(id=item).get(name)
+    #     item_qty = model.session.query(PackListItems).filter_by(item_id=item).get(item_qty)
+    #     attr_packlist_items.append(item_name, item_qty)
+
+    return render_template("home_page.html", user_id=user.id, username=user.username, trip_list=trip_list, packlist_items=packlist_items) #, packlist_id=packlist_id
 
 
 @app.route("/new_trip")
@@ -146,25 +159,27 @@ def create_trip():
     packlist_items = []
 
     db_item_list = model.session.query(Item).all()
-    if packlist_items = []:
-    for item in db_item_list:
-        if item.min_qty != None:
-            packlist_items.append(item.item_id)
-    return
+    if len(packlist_items) == 0:
+        for item in db_item_list:
+            if item.min_qty != None:
+                packlist_items.append(item.id)
+
 
     if activity.id != 12:
         activity_items = model.session.query(ActivityItem).filter_by(activity_id=activity.id).all()
         for act_item in activity_items:
             if activity.id == act_item.activity_id:
                 packlist_items.append(act_item.item_id)
-        return packlist_items
+        # return packlist_items
+
+# Create Pack List Items
+    model.create_packlist_item(packing_list_id=packing_list.id, packlist_items=packlist_items)
 
 
 # on model.py change create_packlist_item to take in a list of items and the packing_list_id
-    model.create_packlist_item(packing_list_id=packing_list.id)
+    # model.create_packlist_item(packing_list_id=packing_list.id)
 
-
-    return redirect(url_for("packing_list", trip_name=trip.name, trip=trip, packing_list=packing_list, destination=trip.destination, activity=activity, start_date=trip.start_date, end_date=trip.end_date)) # activity_list=activity_list
+    return redirect(url_for("packing_list", trip_name=trip.name, packlist_items=packlist_items, trip=trip, packing_list=packing_list, destination=trip.destination, activity=activity, start_date=trip.start_date, end_date=trip.end_date)) # activity_list=activity_list
 
 
 @app.route("/trip/<trip_name>")
@@ -172,9 +187,28 @@ def create_trip():
 def packing_list(trip_name):
     trip = model.get_trip_by_name(trip_name)
     activity_list = model.get_activities_by_trip(trip.id)
-    list_of_items = model.get_list_of_items()
+    # list_of_items = model.get_list_of_items()
 
-    return render_template("packing_list.html", list_of_items=list_of_items, trip=trip,  activity_list=activity_list, trip_name=trip_name, start_date=trip.start_date, end_date=trip.end_date)  # trip_activity_list=trip_activity_list,
+
+    packlist_items = []
+
+    packing_list = model.session.query(PackingList).filter_by(trip_id=trip.id).first()
+
+    for list_item in packing_list.packlist_items:
+        packlist_items.append(list_item.id)
+
+    attr_packlist_items = []
+    for item in packlist_items:
+
+        i = model.session.query(Item).get(item)
+        item_name = i.name
+
+        # item_name = model.session.query(Item).filter_by(id=item).get(name)
+        item_qty = model.session.query(PackListItems).filter_by(item_id=item).count()
+
+        attr_packlist_items.append((item_name, item_qty))
+    # raise Exception(attr_packlist_items)
+    return render_template("packing_list.html", trip=trip, attr_packlist_items=attr_packlist_items,activity_list=activity_list, trip_name=trip_name, start_date=trip.start_date, end_date=trip.end_date)  # trip_activity_list=trip_activity_list,list_of_items=list_of_items
 
 
 @app.route("/settings")
@@ -199,40 +233,3 @@ if __name__ == "__main__":
     admin.add_view(ModelView(model.TripActivity, model.session))
     admin.add_view(ModelView(model.ActivityItem, model.session))
     app.run(debug = True)
-
-
-
-#### Color scheme for background image---- PHOTOSHOP and DESATURATE to make the arrows not so link like!!!!
-
-
-# def forecast_for_day(day):
-#     now = datetime.datetime.now()
-#     day_since_epoch = calendar.timegm(day.utctimetuple()) / 60 / 60 / 24
-#     weather_cache = WeatherCache.query.get(day_since_epoch)
-#     if weather_cache == None:
-#         print "Loading from API", day_since_epoch
-#         forecast = forecastio.load_forecast(FORECAST_SECRET, lat, lng, units="auto", time=day)
-#         daily_weather = forecast.daily().data[0]
-#         cache = WeatherCache(id=day_since_epoch, weather=json.dumps(forecast.json["daily"]["data"][0]), update_time=now)
-#         db.session.add(cache)
-#         db.session.commit()
-#         return daily_weather
-#     else:
-#         if weather_cache.update_time + datetime.timedelta(days=1) < now and now <= day:
-#             print "Updating cache", day_since_epoch
-#             forecast = forecastio.load_forecast(FORECAST_SECRET, lat, lng, units="auto", time=day)
-#             daily_weather = forecast.daily().data[0]
-#             weather_cache.weather = json.dumps(forecast.json["daily"]["data"][0])
-#             weather_cache.update_time = now
-#             db.session.commit()
-#             return daily_weather
-#         else:
-#             print "Loading from cache", day_since_epoch
-#             parsed = json.loads(weather_cache.weather)
-#             return forecastio.models.ForecastioDataPoint(parsed)
-
-
-
-
-
-
