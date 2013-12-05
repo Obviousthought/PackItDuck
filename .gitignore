@@ -4,3 +4,4 @@ venv
 *.db
 config.py
 config.pyc
+packinglist.db
