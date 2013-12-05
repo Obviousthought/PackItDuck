@@ -2,3 +2,5 @@
 venv
 .*.swp
 *.db
+config.py
+config.pyc
