@@ -1,9 +1,9 @@
 from flask import Flask, render_template, redirect, request, g, session, url_for, flash
 from model import User, Trip, PackingList, PackListItems, Item, ActivityItem, Activity, TripActivity
 from flask.ext.login import LoginManager, login_required, login_user, current_user, logout_user
-from flaskext.markdown import Markdown
-from flask.ext.admin import Admin
-from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.markdown import Markdown
+# from flask.ext.admin import Admin
+# from flask.ext.admin.contrib.sqla import ModelView
 import config
 import forms
 import model
@@ -250,15 +250,15 @@ def logout():
 
 
 if __name__ == "__main__":
-    admin = Admin(app)
-    admin.add_view(ModelView(model.User, model.session))
-    admin.add_view(ModelView(model.Trip, model.session))
-    admin.add_view(ModelView(model.PackingList, model.session))
-    admin.add_view(ModelView(model.PackListItems, model.session))
-    admin.add_view(ModelView(model.Activity, model.session))
-    admin.add_view(ModelView(model.Item, model.session))
-    admin.add_view(ModelView(model.TripActivity, model.session))
-    admin.add_view(ModelView(model.ActivityItem, model.session))
+    # admin = Admin(app)
+    # admin.add_view(ModelView(model.User, model.session))
+    # admin.add_view(ModelView(model.Trip, model.session))
+    # admin.add_view(ModelView(model.PackingList, model.session))
+    # admin.add_view(ModelView(model.PackListItems, model.session))
+    # admin.add_view(ModelView(model.Activity, model.session))
+    # admin.add_view(ModelView(model.Item, model.session))
+    # admin.add_view(ModelView(model.TripActivity, model.session))
+    # admin.add_view(ModelView(model.ActivityItem, model.session))
     app.run(debug = True)
 
 # host="0.0.0.0"
