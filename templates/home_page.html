@@ -29,7 +29,7 @@
                                 Start Date
                             </th>
                             <th>
-                                End Date
+                                Total Days
                             </th>
                         </tr>
                     </thead>
@@ -37,8 +37,8 @@
                         {%for trip in trip_list%}
                         <tr>
                             <td>
-                                <a href="{{url_for('packing_list', trip_name=trip.name, packlist_items=packlist_items)}}">{{trip.name}}</a>
-                            </td>
+                                <a href="/trip/{{trip.name}}">{{trip.name}}</a>
+                            </td> <!-- #packlist_items=packlist_items -->
                             <td>
                                 {{trip.destination}}
                             </td>
@@ -46,7 +46,7 @@
                                 {{trip.start_date}}
                             </td>
                             <td>
-                                {{trip.end_date}}
+                                {{trip.total_days}}
                             </td>
                         </tr>
                         {%endfor%}

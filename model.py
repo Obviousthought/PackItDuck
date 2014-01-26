@@ -96,6 +96,7 @@ class Item(Base):
 	max_qty = Column(Integer, nullable=True)  # or false
 	# time_type is # of days an item, quantity of 1, is necessary
 	time_type = Column(Integer, nullable=True) # or false
+	always = Column(Integer, nullable=True)
 
 class ActivityItem(Base):
 	__tablename__="activity_items"
@@ -148,17 +149,51 @@ def create_packinglist(user_id, trip_id):
 	session.add(new_packinglist)
 	session.commit()
 
-def create_packlist_item(packing_list_id, packlist_items):
-	for item in packlist_items:
-		new_packlist_items = PackListItems(packing_list_id=packing_list_id, item_id=item)
+def create_packlist_item(packing_list_id, packlist_items, total_days):
+	if total_days >= 0:
+		for item in packlist_items:
+			if total_days == 1:
+				new_packlist_items = PackListItems(packing_list_id=packing_list_id, item_id=item, item_qty=1)
+			else:
+				new_item_qty = total_days - 1
+				new_packlist_items = PackListItems(packing_list_id=packing_list_id, item_id=item, item_qty=new_item_qty)
+			session.add(new_packlist_items)
+		return session.commit()
+def add_activity_item(packing_list_id, act_pl_items):
+	for item in act_pl_items:
+		new_packlist_items = PackListItems(packing_list_id=packing_list_id, item_id=item, item_qty=1)
 		session.add(new_packlist_items)
 	return session.commit()
 
-def update_item_qty(packing_list_id, item_id, item_qty):
-	new_item_qty = PackListItems.update().where(packing_list_id=packing_list_id, item_id=item_id).values(item_qty=item_qty)
+# def insert_packlist_item(packing_list_id, packlist_items):
+# 	for item in packlist_items:
+# 		added_pl_items = packlist_items.insert().values(item_id)
+
+# 		where(packing_list_id=packing_list_id).values(item_id=item, item_qty=1)
+# 		session.add(added_pl_items)
+# 		session.commit()
+
+# def update_item_qty(packing_list_id, item_id, item_qty):
+	# new_item_qty = session.query(PackListItems).update().where(packing_list_id=packing_list_id, item_id=item_id).values(item_qty=item_qty)
+
+	# packlist_items = session.query(PackListItems).filter_by(packing_list_id=packing_list_id).first()
+	# new_item_qty = packlist_items.update().where(item_id=item_id).values(item_qty=item_qty)
+
+	# new_item_qty = session.query(PackListItems).filter_by(packing_list_id=packing_list_id, item_id=item_id).update(item_qty=item_qty)
+
+	# new_item_qty = packlist_items.update()
+
+	# update(packlist_items).where(item_id=item_id).values(item_qty=item_qty)
+
+	# session.query(PackListItems).filter_by(packing_list_id=packing_list_id, item_id=item_id).first().update().values(item_qty=item_qty)
+
+	# new_item_qty = update(packlist_items, packlist_items.)
+
+	# packlist_item = session.query(PackListItems).filter_by(packing_list_id=packing_list_id, item_id=item_id).first()
+	# new_item_qty = 
+
 	session.add(new_item_qty)
 	return session.commit()
-
 
 def create_trip_activity(trip_id, activity_id):
 	new_trip_activity = TripActivity(trip_id=trip_id, activity_id=activity_id)

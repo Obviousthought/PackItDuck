@@ -21,4 +21,4 @@ Skaffold(app, model.Activity, model.session)
 Skaffold(app, model.TripActivity, model.session)
 
 if __name__ == "__main__":
-	app.run()
+	app.run(host="0.0.0.0")

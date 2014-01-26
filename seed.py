@@ -13,7 +13,9 @@ def load_items(session):
                 item[2] = None
             if item[3] == '':
                 item[3] = None
-            new_item = model.Item(name=item[0],min_qty=item[1],max_qty=item[2],time_type=item[3])
+            if item[4] == '':
+                item[4] = None
+            new_item = model.Item(name=item[0],min_qty=item[1],max_qty=item[2],time_type=item[3], always=item[4])
             session.add(new_item)
     return session
 

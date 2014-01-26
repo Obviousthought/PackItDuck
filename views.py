@@ -102,12 +102,12 @@ def profile(username):
     # trip_names = model.get_user_trip_names(user.id)
     trip_list = model.get_user_trips(user.id)
 
-    packlist_items = []
-    for trip in trip_list:
-        packing_list = model.session.query(PackingList).filter_by(trip_id=trip.id).first()
-        # packing_list_id = model.session.query(PackingList).filter_by(trip_id=trip.id).get(id)
-        packlist_item = model.session.query(PackListItems).filter_by(packing_list_id=packing_list.id).first()
-        packlist_items.append(packlist_item.id)
+    # packlist_items = []
+    # for trip in trip_list:
+    #     packing_list = model.session.query(PackingList).filter_by(trip_id=trip.id).first()
+    #     # packing_list_id = model.session.query(PackingList).filter_by(trip_id=trip.id).get(id)
+    #     packlist_item = model.session.query(PackListItems).filter_by(packing_list_id=packing_list.id).first()
+    #     packlist_items.append(packlist_item.id)
 
     # attr_packlist_items = []
     # for item in packlist_items:
@@ -115,7 +115,7 @@ def profile(username):
     #     item_qty = model.session.query(PackListItems).filter_by(item_id=item).get(item_qty)
     #     attr_packlist_items.append(item_name, item_qty)
 
-    return render_template("home_page.html", user_id=user.id, username=user.username, trip_list=trip_list, packlist_items=packlist_items) #, packlist_id=packlist_id
+    return render_template("home_page.html", user_id=user.id, username=user.username, trip_list=trip_list) #, packlist_id=packlist_idpacklist_items=packlist_items
 
 
 @app.route("/new_trip")
@@ -161,20 +161,29 @@ def create_trip():
     db_item_list = model.session.query(Item).all()
     if len(packlist_items) == 0:
         for item in db_item_list:
-            if item.min_qty != None:
+            if item.always != None:
                 packlist_items.append(item.id)
+        # return packlist_items
 
+    # if trip.total_days >= 1:
+    #     for item in packlist_items:
+    #         item_qty = trip.total_days - 1
+    #         model.update_item_qty(packing_list_id=packing_list.id, item_id=item, item_qty=item_qty)
+
+# Create Pack List Items
+    model.create_packlist_item(packing_list_id=packing_list.id, packlist_items=packlist_items, total_days=trip.total_days)
+
+# Update Pack List Items with Activity Items
+    activity_pl_items = []
 
     if activity.id != 12:
         activity_items = model.session.query(ActivityItem).filter_by(activity_id=activity.id).all()
         for act_item in activity_items:
             if activity.id == act_item.activity_id:
-                packlist_items.append(act_item.item_id)
-        # return packlist_items
+                activity_pl_items.append(act_item.item_id)
+                packlist_items.append(item.id)               
 
-# Create Pack List Items
-    model.create_packlist_item(packing_list_id=packing_list.id, packlist_items=packlist_items)
-
+    model.add_activity_item(packing_list_id=packing_list.id, act_pl_items=activity_pl_items)
 
 # on model.py change create_packlist_item to take in a list of items and the packing_list_id
     # model.create_packlist_item(packing_list_id=packing_list.id)
@@ -189,24 +198,42 @@ def packing_list(trip_name):
     activity_list = model.get_activities_by_trip(trip.id)
     # list_of_items = model.get_list_of_items()
 
-
-    packlist_items = []
+    # packlist_items = []
 
     packing_list = model.session.query(PackingList).filter_by(trip_id=trip.id).first()
 
-    for list_item in packing_list.packlist_items:
-        packlist_items.append(list_item.id)
+    packlist_items = model.session.query(PackListItems).filter_by(packing_list_id=packing_list.id).all()
 
     attr_packlist_items = []
     for item in packlist_items:
-
-        i = model.session.query(Item).get(item)
+        item_qty = item.item_qty
+        i = model.session.query(Item).filter_by(id=item.item_id).first()
         item_name = i.name
-
-        # item_name = model.session.query(Item).filter_by(id=item).get(name)
-        item_qty = model.session.query(PackListItems).filter_by(item_id=item).count()
-
         attr_packlist_items.append((item_name, item_qty))
+
+
+    # for list_item in packing_list.packlist_items:
+    #     packlist_items.append(list_item.id)
+
+    # for list_item in packing_list.packlist_items:
+    #     packlist_items.append(list_item.id)
+
+    # attr_packlist_items = []
+    # for item in packlist_items:
+
+    #     i = model.session.query(Item).filter_by(id=item).first()
+        
+    #     # pdb.set_trace()
+    #     if not i:
+    #         #handle missing item item
+    #         pass
+    #     else:
+    #         item_name = i.name
+
+    #         # item_name = model.session.query(Item).filter_by(id=item).name
+    #         item_qty = model.session.query(PackListItems).filter_by(item_id=item).count()
+
+    #         attr_packlist_items.append((item_name, item_qty))
     # raise Exception(attr_packlist_items)
     return render_template("packing_list.html", trip=trip, attr_packlist_items=attr_packlist_items,activity_list=activity_list, trip_name=trip_name, start_date=trip.start_date, end_date=trip.end_date)  # trip_activity_list=trip_activity_list,list_of_items=list_of_items
 
@@ -233,3 +260,5 @@ if __name__ == "__main__":
     admin.add_view(ModelView(model.TripActivity, model.session))
     admin.add_view(ModelView(model.ActivityItem, model.session))
     app.run(debug = True)
+
+# host="0.0.0.0"
