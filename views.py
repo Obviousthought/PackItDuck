@@ -9,7 +9,7 @@ import forms
 import model
 import datetime
 import json
-import forecastio
+# import forecastio
 import pdb
 
 
