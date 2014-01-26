@@ -1,5 +1,4 @@
 import config
-import bcrypt
 from datetime import datetime, date, timedelta
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -10,7 +9,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session, relationship, backref, 
 
 from flask.ext.login import UserMixin
 
-import pdb
+# import pdb
 # pdb.set_trace()
 
 engine = create_engine(config.DB_URI, echo=True)
